@@ -1,0 +1,53 @@
+buildscript {
+    repositories {
+        maven {
+            url "https://maven.aliyun.com/repository/gradle-plugin"
+        }
+    }
+    dependencies {
+        classpath "gradle.plugin.org.jetbrains.intellij.plugins:gradle-intellij-plugin:0.4.16"
+    }
+}
+
+plugins {
+    id 'scala'
+}
+
+apply plugin: "org.jetbrains.intellij"
+
+group 'tech.phosphorus'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+repositories {
+
+    maven { url 'http://maven.aliyun.com/nexus/content/repositories/central/' }
+
+}
+
+dependencies {
+    implementation 'org.scala-lang:scala-library:2.11.12'
+    testImplementation 'org.scalatest:scalatest_2.11:3.0.0'
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+// See https://github.com/JetBrains/gradle-intellij-plugin/
+intellij {
+    localPath 'C:\\Users\\Phosphorus15\\AppData\\Local\\JetBrains\\Toolbox\\apps\\IDEA-U\\ch-0\\193.6494.35'
+}
+
+task "generateDirs" {
+    sourceSets*.java.srcDirs*.each {
+        it.mkdirs()
+    }
+    sourceSets*.scala.srcDirs*.each {
+        it.mkdirs()
+    }
+}
+
+patchPluginXml {
+    changeNotes """
+      Add change notes here.<br>
+      <em>most HTML tags may be used</em>"""
+}
