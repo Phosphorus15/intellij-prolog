@@ -1,0 +1,63 @@
+{
+  parserClass="tech.phosphorus.intellij.prolog.psi.PrologParser"
+  parserUtilClass="tech.phosphorus.intellij.prolog.psi.PrologParserUtil"
+
+  extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+  psiClassPrefix="Prolog"
+  psiImplClassSuffix="Impl"
+  psiPackage="tech.phosphorus.intellij.prolog.psi"
+  psiImplPackage="tech.phosphorus.intellij.prolog.psi.impl"
+
+  elementTypeHolderClass="tech.phosphorus.intellij.prolog.psi.PrologTypes"
+  elementTypeClass="tech.phosphorus.intellij.prolog.psi.PrologElementType"
+  tokenTypeClass="tech.phosphorus.intellij.prolog.psi.PrologTokenType"
+
+  psiImplUtilClass="tech.phosphorus.intellij.prolog.psi.impl.SimplePsiImplUtil"
+
+  tokens=[
+      SEMI=';'
+      COMMA=','
+      DOT='.'
+      UNIFY=':-'
+      NOT='/-'
+      EQ='='
+      LP='('
+      RP=')'
+
+      space='regexp:\s+'
+      comment='regexp:(%.*)'
+      number='regexp:\d+(\.\d*)?'
+      const_id='regexp:\p{Lower}\p{Alnum}*'
+      atom_id='regexp:\p{Upper}\p{Alnum}*'
+      operator_id='regexp:[<=>:!+\-*/]+' // considering that operators in prolog can fly everywhere...
+      string="regexp:('([^'\\]|\\.)*'|\"([^\"\\]|\\.)*\")"
+
+      op_1='+'
+      op_2='-'
+      op_3='*'
+      op_4='/'
+      op_5='!'
+    ]
+}
+
+root ::= rule*
+private rule ::= !<<eof>> expr_head (':-' expr_body)? '.'
+
+expr_head ::= predicate
+
+expr_body ::= primary
+
+predicate ::= const_id parameter_list?
+
+parameter_list ::= '(' primary? ')'
+
+logical_or ::= ';' primary
+
+logical_and ::= ',' primary
+
+logical_not ::= '/-' primary
+
+private primary ::= (predicate | logical_not | ident | operator_id) (predicate | logical_not | logical_and | logical_or | ident | operator_id)*
+
+ident ::= (const_id | atom_id)

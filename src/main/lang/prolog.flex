@@ -1,9 +1,8 @@
 package tech.phosphorus.intellij.prolog;
 
-import com.intellij.lexer.FlexLexer;
 import com.intellij.psi.tree.IElementType;
 
-import static tech.phosphorus.intellij.prolog.PrologTokenType.*;
+import static tech.phosphorus.intellij.prolog.psi.PrologTokenType.*;
 
 import static com.intellij.psi.TokenType.BAD_CHARACTER;
 import static com.intellij.psi.TokenType.WHITE_SPACE;

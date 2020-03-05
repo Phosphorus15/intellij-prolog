@@ -1,14 +1,14 @@
 package tech.phosphorus.intellij.prolog
 
-import com.intellij.lang.Language
 import com.intellij.lexer.{FlexAdapter, Lexer}
 import com.intellij.openapi.editor.DefaultLanguageHighlighterColors
 import com.intellij.openapi.editor.colors.TextAttributesKey
-import com.intellij.openapi.fileTypes.{SyntaxHighlighter, SyntaxHighlighterBase, SyntaxHighlighterFactory}
-import com.intellij.psi.tree.IElementType
 import com.intellij.openapi.editor.colors.TextAttributesKey.createTextAttributesKey
+import com.intellij.openapi.fileTypes.{SyntaxHighlighter, SyntaxHighlighterBase, SyntaxHighlighterFactory}
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.psi.tree.IElementType
+import tech.phosphorus.intellij.prolog.psi.PrologTypes
 
 class PrologLexerAdapter extends FlexAdapter(new PrologLexer)
 
@@ -17,21 +17,19 @@ class PrologSyntaxHighlighter extends SyntaxHighlighterBase {
 
   override def getTokenHighlights(iElementType: IElementType): Array[TextAttributesKey] = {
     iElementType match {
-      case PrologTokenType.LINE_COMMENT =>
+      case PrologTypes.COMMENT =>
         Array(createTextAttributesKey("LINE_COMMENT", DefaultLanguageHighlighterColors.LINE_COMMENT))
-      case PrologTokenType.DOT =>
+      case PrologTypes.DOT =>
         Array(createTextAttributesKey("DOT_ENDING", DefaultLanguageHighlighterColors.SEMICOLON))
-      case PrologTokenType.ARITHMETIC_EVAL | PrologTokenType.WILDCARD =>
+      case PrologTypes.UNIFY =>
         Array(createTextAttributesKey("KEYWORDS", DefaultLanguageHighlighterColors.KEYWORD))
-      case PrologTokenType.LBRACKET | PrologTokenType.RBRACKET =>
-        Array(createTextAttributesKey("BRACKETS", DefaultLanguageHighlighterColors.BRACKETS))
-      case PrologTokenType.LPAREN | PrologTokenType.RPAREN =>
+      case PrologTypes.LP | PrologTypes.RP =>
         Array(createTextAttributesKey("PARENTS", DefaultLanguageHighlighterColors.PARENTHESES))
-      case PrologTokenType.IDENTIFIER_DOWNCASE =>
+      case PrologTypes.CONST_ID =>
         Array(createTextAttributesKey("CONSTANTS", DefaultLanguageHighlighterColors.IDENTIFIER))
-      case PrologTokenType.IDENTIFIER_UPCASE =>
+      case PrologTypes.ATOM_ID =>
         Array(createTextAttributesKey("IDENTIFIER", DefaultLanguageHighlighterColors.LOCAL_VARIABLE))
-      case PrologTokenType.COMMA_AND | PrologTokenType.SEMI_OR =>
+      case PrologTypes.LOGICAL_AND | PrologTypes.LOGICAL_OR | PrologTypes.OPERATOR_ID =>
         Array(createTextAttributesKey("COMMA_AND", DefaultLanguageHighlighterColors.OPERATION_SIGN))
       case _ => Array()
     }
