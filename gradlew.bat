@@ -1,3 +1,4 @@
+set DEFAULT_JVM_OPTS="-Dfile.encoding=UTF-8"
 @if "%DEBUG%" == "" @echo off
 @rem ##########################################################################
 @rem
