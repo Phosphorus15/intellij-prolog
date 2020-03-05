@@ -13,9 +13,9 @@
     <depends>com.intellij.modules.platform</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <!-- Add your extensions here -->
-    </extensions>
-
+        <fileType name="Prolog file" implementationClass="tech.phosphorus.intellij.prolog.psi.PrologFileType"
+                  fieldName="INSTANCE" language="Prolog" extensions="pl"/>
+        <lang.syntaxHighlighterFactory language="Prolog" implementationClass="tech.phosphorus.intellij.prolog.PrologSyntaxHighlighterFactory"/>    </extensions>
     <actions>
         <!-- Add your actions here -->
     </actions>
