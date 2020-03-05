@@ -11,7 +11,7 @@ public class PrologFileType extends LanguageFileType {
 
     public static final PrologFileType INSTANCE = new PrologFileType();
 
-    protected PrologFileType() {
+    public PrologFileType() {
         super(PrologLanguage.INSTANCE);
     }
 

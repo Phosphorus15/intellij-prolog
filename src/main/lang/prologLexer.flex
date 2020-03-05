@@ -45,11 +45,6 @@ STRING=('([^'\\]|\\.)*'|\"([^\"\\]|\\.)*\")
   "="                { return EQ; }
   "("                { return LP; }
   ")"                { return RP; }
-  "+"                { return OP_1; }
-  "-"                { return OP_2; }
-  "*"                { return OP_3; }
-  "/"                { return OP_4; }
-  "!"                { return OP_5; }
 
   {SPACE}            { return SPACE; }
   {COMMENT}          { return COMMENT; }

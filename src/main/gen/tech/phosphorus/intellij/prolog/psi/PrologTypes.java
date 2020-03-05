@@ -27,11 +27,6 @@ public interface PrologTypes {
   IElementType NOT = new PrologTokenType("/-");
   IElementType NUMBER = new PrologTokenType("number");
   IElementType OPERATOR_ID = new PrologTokenType("operator_id");
-  IElementType OP_1 = new PrologTokenType("+");
-  IElementType OP_2 = new PrologTokenType("-");
-  IElementType OP_3 = new PrologTokenType("*");
-  IElementType OP_4 = new PrologTokenType("/");
-  IElementType OP_5 = new PrologTokenType("!");
   IElementType RP = new PrologTokenType(")");
   IElementType SEMI = new PrologTokenType(";");
   IElementType STRING = new PrologTokenType("string");

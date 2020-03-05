@@ -32,12 +32,6 @@
       atom_id='regexp:\p{Upper}\p{Alnum}*'
       operator_id='regexp:[<=>:!+\-*/]+' // considering that operators in prolog can fly everywhere...
       string="regexp:('([^'\\]|\\.)*'|\"([^\"\\]|\\.)*\")"
-
-      op_1='+'
-      op_2='-'
-      op_3='*'
-      op_4='/'
-      op_5='!'
     ]
 }
 

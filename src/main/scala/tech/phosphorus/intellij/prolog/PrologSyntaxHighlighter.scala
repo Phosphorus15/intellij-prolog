@@ -38,5 +38,5 @@ class PrologSyntaxHighlighter extends SyntaxHighlighterBase {
 
 class PrologSyntaxHighlighterFactory extends SyntaxHighlighterFactory {
   override def getSyntaxHighlighter(project: Project, virtualFile: VirtualFile)
-        : SyntaxHighlighter = new PrologSyntaxHighlighter
+  : SyntaxHighlighter = new PrologSyntaxHighlighter
 }
