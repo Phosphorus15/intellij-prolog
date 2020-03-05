@@ -52,6 +52,6 @@ logical_and ::= ',' primary
 
 logical_not ::= '/-' primary
 
-private primary ::= (predicate | logical_not | ident | operator_id) (predicate | logical_not | logical_and | logical_or | ident | operator_id)*
+private primary ::= (ident | predicate | logical_not | operator_id) (ident | predicate | logical_not | logical_and | logical_or  | operator_id)*
 
 ident ::= (const_id | atom_id)
