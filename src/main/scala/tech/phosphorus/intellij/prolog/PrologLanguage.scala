@@ -19,8 +19,20 @@ class PrologSyntaxHighlighter extends SyntaxHighlighterBase {
     iElementType match {
       case PrologTokenType.LINE_COMMENT =>
         Array(createTextAttributesKey("LINE_COMMENT", DefaultLanguageHighlighterColors.LINE_COMMENT))
-      case PrologTokenType.WILDCARD | PrologTokenType.DOT =>
-        Array(createTextAttributesKey("LINE_COMMENT", DefaultLanguageHighlighterColors.KEYWORD))
+      case PrologTokenType.DOT =>
+        Array(createTextAttributesKey("DOT_ENDING", DefaultLanguageHighlighterColors.SEMICOLON))
+      case PrologTokenType.ARITHMETIC_EVAL | PrologTokenType.WILDCARD =>
+        Array(createTextAttributesKey("KEYWORDS", DefaultLanguageHighlighterColors.KEYWORD))
+      case PrologTokenType.LBRACKET | PrologTokenType.RBRACKET =>
+        Array(createTextAttributesKey("BRACKETS", DefaultLanguageHighlighterColors.BRACKETS))
+      case PrologTokenType.LPAREN | PrologTokenType.RPAREN =>
+        Array(createTextAttributesKey("PARENTS", DefaultLanguageHighlighterColors.PARENTHESES))
+      case PrologTokenType.IDENTIFIER_DOWNCASE =>
+        Array(createTextAttributesKey("CONSTANTS", DefaultLanguageHighlighterColors.IDENTIFIER))
+      case PrologTokenType.IDENTIFIER_UPCASE =>
+        Array(createTextAttributesKey("IDENTIFIER", DefaultLanguageHighlighterColors.LOCAL_VARIABLE))
+      case PrologTokenType.COMMA_AND | PrologTokenType.SEMI_OR =>
+        Array(createTextAttributesKey("COMMA_AND", DefaultLanguageHighlighterColors.OPERATION_SIGN))
       case _ => Array()
     }
   }

@@ -1,4 +1,4 @@
-package tech.phosphorus.intellij;
+package tech.phosphorus.intellij.prolog;
 
 import com.intellij.lexer.FlexLexer;
 import com.intellij.psi.tree.IElementType;
@@ -40,6 +40,8 @@ _ { return WILDCARD(); }
 \) { return RPAREN(); }
 \[ { return LBRACKET(); }
 \] { return RBRACKET(); }
+
+is { return ARITHMETIC_EVAL(); }
 
 {UNIVERSE} { return DEFINITION(); }
 {COMMENTS} { return LINE_COMMENT(); }

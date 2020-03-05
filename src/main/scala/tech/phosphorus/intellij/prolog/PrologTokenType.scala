@@ -18,4 +18,5 @@ object PrologTokenType {
   val LBRACKET = new PrologTokenType("LBRACKET")
   val RBRACKET = new PrologTokenType("RBRACKET")
   val LINE_COMMENT = new PrologTokenType("LINE_COMMENT")
+  val ARITHMETIC_EVAL = new PrologTokenType("ARITHMETIC_EVAL")
 }
