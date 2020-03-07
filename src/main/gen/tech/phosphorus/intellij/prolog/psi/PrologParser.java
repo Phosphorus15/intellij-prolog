@@ -64,6 +64,43 @@ public class PrologParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // common_val | '(' common_val ')' | '{' common_val '}'
+  static boolean common_val_or_paren(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "common_val_or_paren")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = common_val(b, l + 1);
+    if (!r) r = common_val_or_paren_1(b, l + 1);
+    if (!r) r = common_val_or_paren_2(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // '(' common_val ')'
+  private static boolean common_val_or_paren_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "common_val_or_paren_1")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, LP);
+    r = r && common_val(b, l + 1);
+    r = r && consumeToken(b, RP);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // '{' common_val '}'
+  private static boolean common_val_or_paren_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "common_val_or_paren_2")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, LBR);
+    r = r && common_val(b, l + 1);
+    r = r && consumeToken(b, RBR);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  /* ********************************************************** */
   // logical_not | logical_and | arithmetic_eval
   public static boolean equiv_binary(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "equiv_binary")) return false;
@@ -258,7 +295,7 @@ public class PrologParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // (common_val | logical_not | operator_id) (common_val | equiv_binary | logical_or  | operator_id)*
+  // (common_val_or_paren | logical_not | operator_id) (common_val_or_paren | equiv_binary | logical_or  | operator_id)*
   static boolean primary(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "primary")) return false;
     boolean r;
@@ -269,17 +306,17 @@ public class PrologParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // common_val | logical_not | operator_id
+  // common_val_or_paren | logical_not | operator_id
   private static boolean primary_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "primary_0")) return false;
     boolean r;
-    r = common_val(b, l + 1);
+    r = common_val_or_paren(b, l + 1);
     if (!r) r = logical_not(b, l + 1);
     if (!r) r = consumeToken(b, OPERATOR_ID);
     return r;
   }
 
-  // (common_val | equiv_binary | logical_or  | operator_id)*
+  // (common_val_or_paren | equiv_binary | logical_or  | operator_id)*
   private static boolean primary_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "primary_1")) return false;
     while (true) {
@@ -290,11 +327,11 @@ public class PrologParser implements PsiParser, LightPsiParser {
     return true;
   }
 
-  // common_val | equiv_binary | logical_or  | operator_id
+  // common_val_or_paren | equiv_binary | logical_or  | operator_id
   private static boolean primary_1_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "primary_1_0")) return false;
     boolean r;
-    r = common_val(b, l + 1);
+    r = common_val_or_paren(b, l + 1);
     if (!r) r = equiv_binary(b, l + 1);
     if (!r) r = logical_or(b, l + 1);
     if (!r) r = consumeToken(b, OPERATOR_ID);
@@ -314,14 +351,13 @@ public class PrologParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // !<<eof>> expr_head (':-' expr_body)? '.'
+  // !<<eof>> ((expr_head ((':-' | '-->') expr_body)?) | (':-' expr_body)) '.'
   static boolean rule(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "rule")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = rule_0(b, l + 1);
-    r = r && expr_head(b, l + 1);
-    r = r && rule_2(b, l + 1);
+    r = r && rule_1(b, l + 1);
     r = r && consumeToken(b, DOT);
     exit_section_(b, m, null, r);
     return r;
@@ -337,16 +373,60 @@ public class PrologParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // (':-' expr_body)?
-  private static boolean rule_2(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "rule_2")) return false;
-    rule_2_0(b, l + 1);
+  // (expr_head ((':-' | '-->') expr_body)?) | (':-' expr_body)
+  private static boolean rule_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "rule_1")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = rule_1_0(b, l + 1);
+    if (!r) r = rule_1_1(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // expr_head ((':-' | '-->') expr_body)?
+  private static boolean rule_1_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "rule_1_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = expr_head(b, l + 1);
+    r = r && rule_1_0_1(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // ((':-' | '-->') expr_body)?
+  private static boolean rule_1_0_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "rule_1_0_1")) return false;
+    rule_1_0_1_0(b, l + 1);
     return true;
   }
 
+  // (':-' | '-->') expr_body
+  private static boolean rule_1_0_1_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "rule_1_0_1_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = rule_1_0_1_0_0(b, l + 1);
+    r = r && expr_body(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // ':-' | '-->'
+  private static boolean rule_1_0_1_0_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "rule_1_0_1_0_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, UNIFY);
+    if (!r) r = consumeToken(b, EXPAND);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
   // ':-' expr_body
-  private static boolean rule_2_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "rule_2_0")) return false;
+  private static boolean rule_1_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "rule_1_1")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeToken(b, UNIFY);

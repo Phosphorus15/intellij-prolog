@@ -29,14 +29,17 @@ public interface PrologTypes {
   IElementType COMMENT = new PrologTokenType("comment");
   IElementType CONST_ID = new PrologTokenType("const_id");
   IElementType DOT = new PrologTokenType(".");
+  IElementType EXPAND = new PrologTokenType("-->");
   IElementType FLOAT = new PrologTokenType("float");
   IElementType INTEGER = new PrologTokenType("integer");
   IElementType LB = new PrologTokenType("[");
+  IElementType LBR = new PrologTokenType("{");
   IElementType LIST_CONS = new PrologTokenType("|");
   IElementType LP = new PrologTokenType("(");
   IElementType NOT = new PrologTokenType("/-");
   IElementType OPERATOR_ID = new PrologTokenType("operator_id");
   IElementType RB = new PrologTokenType("]");
+  IElementType RBR = new PrologTokenType("}");
   IElementType RP = new PrologTokenType(")");
   IElementType SEMI = new PrologTokenType(";");
   IElementType STRING = new PrologTokenType("string");

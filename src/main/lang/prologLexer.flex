@@ -28,8 +28,8 @@ WHITE_SPACE=\s+
 SPACE=[ \t\n\x0B\f\r]+
 COMMENT=(%.*)
 INTEGER=[0-9]+
-FLOAT=[0-9]+(\.d+)?
-CONST_ID=[:lowercase:]([:letter:]|[:digit:])*
+FLOAT=[0-9]+(\.d+)?([Ee][0-9]+)?
+CONST_ID=[:lowercase:](([:letter:]|[:digit:])|_|-|:)*
 ATOM_ID=[:uppercase:]([:letter:]|[:digit:])*
 OPERATOR_ID=[<=>:!+\-*/]+
 STRING=('([^'\\]|\\.)*'|\"([^\"\\]|\\.)*\")
@@ -42,11 +42,14 @@ STRING=('([^'\\]|\\.)*'|\"([^\"\\]|\\.)*\")
   ","                { return COMMA; }
   "."                { return DOT; }
   ":-"               { return UNIFY; }
+  "-->"              { return EXPAND; }
   "/-"               { return NOT; }
   "("                { return LP; }
   ")"                { return RP; }
   "["                { return LB; }
   "]"                { return RB; }
+  "{"                { return LBR; }
+  "}"                { return RBR; }
   "|"                { return LIST_CONS; }
   "_"                { return WILDCARD; }
   "is"               { return ARITH_EVAL; }

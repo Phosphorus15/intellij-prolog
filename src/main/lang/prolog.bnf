@@ -20,11 +20,14 @@
       COMMA=','
       DOT='.'
       UNIFY=':-'
+      EXPAND='-->'
       NOT='/-'
       LP='('
       RP=')'
       LB='['
       RB=']'
+      LBR='{'
+      RBR='}'
       LIST_CONS='|'
       WILDCARD='_'
       ARITH_EVAL='is'
@@ -32,8 +35,8 @@
       space='regexp:\s+'
       comment='regexp:(%.*)'
       integer='regexp:\d+'
-      float='regexp:\d+(\.d+)?' // strict floating mode
-      const_id='regexp:\p{Lower}\p{Alnum}*'
+      float='regexp:\d+(\.d+)?([Ee]\d+)?' // strict floating mode
+      const_id='regexp:\p{Lower}(\p{Alnum}|_|-|:)*'
       atom_id='regexp:\p{Upper}\p{Alnum}*'
       operator_id='regexp:[<=>:!+\-*/]+' // considering that operators in prolog can fly everywhere...
       string="regexp:('([^'\\]|\\.)*'|\"([^\"\\]|\\.)*\")"
@@ -41,7 +44,7 @@
 }
 
 root ::= rule*
-private rule ::= !<<eof>> expr_head (':-' expr_body)? '.'
+private rule ::= !<<eof>> ((expr_head ((':-' | '-->') expr_body)?) | (':-' expr_body)) '.'
 
 expr_head ::= predicate
 
@@ -69,6 +72,8 @@ list_constructor ::= '[' ']' | '[' primary '|' primary ']' | '[' primary ']'
 
 common_val ::= predicate | ident | literal | list_constructor | '_'
 
-private primary ::= (common_val | logical_not | operator_id) (common_val | equiv_binary | logical_or  | operator_id)*
+private common_val_or_paren ::= common_val | '(' common_val ')' | '{' common_val '}'
+
+private primary ::= (common_val_or_paren | logical_not | operator_id) (common_val_or_paren | equiv_binary | logical_or  | operator_id)*
 
 ident ::= (const_id | atom_id)
