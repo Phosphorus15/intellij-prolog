@@ -35,10 +35,12 @@ dependencies {
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
-    localPath "C:\\Users\\${System.getProperty("user.name")}\\AppData\\Local\\JetBrains\\Toolbox\\apps\\IDEA-U\\ch-0\\193.6494.35"
+    if (!System.getenv("CI")?.trim()) {
+        localPath "C:\\Users\\${System.getProperty("user.name")}\\AppData\\Local\\JetBrains\\Toolbox\\apps\\IDEA-U\\ch-0\\193.6494.35"
+    }
 }
 
-sourceSets.main.scala.srcDirs = ['src/main/gen','src/main/scala']
+sourceSets.main.scala.srcDirs = ['src/main/gen', 'src/main/scala']
 
 task "generateDirs" {
     sourceSets*.scala.srcDirs*.each {
