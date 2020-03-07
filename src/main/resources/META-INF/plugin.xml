@@ -13,6 +13,8 @@
     <depends>com.intellij.modules.platform</depends>
 
     <extensions defaultExtensionNs="com.intellij">
+        <lang.braceMatcher language="Prolog" implementationClass="tech.phosphorus.intellij.prolog.PrologBraceMatcher"/>
+        <lang.commenter language="Prolog" implementationClass="tech.phosphorus.intellij.prolog.MultiLineCommenter" />
         <lang.parserDefinition language="Prolog"
                                implementationClass="tech.phosphorus.intellij.prolog.PrologParserDefinition"/>
         <fileType name="Prolog file" implementationClass="tech.phosphorus.intellij.prolog.psi.PrologFileType"

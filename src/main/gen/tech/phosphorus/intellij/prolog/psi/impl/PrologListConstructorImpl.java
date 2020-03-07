@@ -11,14 +11,14 @@ import static tech.phosphorus.intellij.prolog.psi.PrologTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import tech.phosphorus.intellij.prolog.psi.*;
 
-public class PrologLogicalNotImpl extends ASTWrapperPsiElement implements PrologLogicalNot {
+public class PrologListConstructorImpl extends ASTWrapperPsiElement implements PrologListConstructor {
 
-  public PrologLogicalNotImpl(@NotNull ASTNode node) {
+  public PrologListConstructorImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull PrologVisitor visitor) {
-    visitor.visitLogicalNot(this);
+    visitor.visitListConstructor(this);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
@@ -39,9 +39,9 @@ public class PrologLogicalNotImpl extends ASTWrapperPsiElement implements Prolog
   }
 
   @Override
-  @Nullable
-  public PrologLogicalNot getLogicalNot() {
-    return findChildByClass(PrologLogicalNot.class);
+  @NotNull
+  public List<PrologLogicalNot> getLogicalNotList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, PrologLogicalNot.class);
   }
 
   @Override

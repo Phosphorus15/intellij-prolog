@@ -27,7 +27,8 @@ WHITE_SPACE=\s+
 
 SPACE=[ \t\n\x0B\f\r]+
 COMMENT=(%.*)
-NUMBER=[0-9]+(\.[0-9]*)?
+INTEGER=[0-9]+
+FLOAT=[0-9]+(\.d+)?
 CONST_ID=[:lowercase:]([:letter:]|[:digit:])*
 ATOM_ID=[:uppercase:]([:letter:]|[:digit:])*
 OPERATOR_ID=[<=>:!+\-*/]+
@@ -42,13 +43,18 @@ STRING=('([^'\\]|\\.)*'|\"([^\"\\]|\\.)*\")
   "."                { return DOT; }
   ":-"               { return UNIFY; }
   "/-"               { return NOT; }
-  "="                { return EQ; }
   "("                { return LP; }
   ")"                { return RP; }
+  "["                { return LB; }
+  "]"                { return RB; }
+  "|"                { return LIST_CONS; }
+  "_"                { return WILDCARD; }
+  "is"               { return ARITH_EVAL; }
 
   {SPACE}            { return SPACE; }
   {COMMENT}          { return COMMENT; }
-  {NUMBER}           { return NUMBER; }
+  {INTEGER}          { return INTEGER; }
+  {FLOAT}            { return FLOAT; }
   {CONST_ID}         { return CONST_ID; }
   {ATOM_ID}          { return ATOM_ID; }
   {OPERATOR_ID}      { return OPERATOR_ID; }

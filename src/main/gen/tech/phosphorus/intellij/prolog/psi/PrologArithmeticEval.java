@@ -5,7 +5,7 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface PrologParameterList extends PsiElement {
+public interface PrologArithmeticEval extends PsiElement {
 
   @NotNull
   List<PrologCommonVal> getCommonValList();

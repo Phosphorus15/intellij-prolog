@@ -5,12 +5,15 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface PrologPredicate extends PsiElement {
+public interface PrologLiteral extends PsiElement {
 
   @Nullable
-  PrologParameterList getParameterList();
+  PsiElement getFloat();
 
-  @NotNull
-  PrologPredicateId getPredicateId();
+  @Nullable
+  PsiElement getInteger();
+
+  @Nullable
+  PsiElement getString();
 
 }

@@ -34,8 +34,8 @@ public class PrologPredicateImpl extends ASTWrapperPsiElement implements PrologP
 
   @Override
   @NotNull
-  public PsiElement getConstId() {
-    return findNotNullChildByType(CONST_ID);
+  public PrologPredicateId getPredicateId() {
+    return findNotNullChildByClass(PrologPredicateId.class);
   }
 
 }

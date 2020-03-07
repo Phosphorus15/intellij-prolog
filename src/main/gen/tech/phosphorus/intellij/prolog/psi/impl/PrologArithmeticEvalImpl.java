@@ -11,14 +11,14 @@ import static tech.phosphorus.intellij.prolog.psi.PrologTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import tech.phosphorus.intellij.prolog.psi.*;
 
-public class PrologLogicalNotImpl extends ASTWrapperPsiElement implements PrologLogicalNot {
+public class PrologArithmeticEvalImpl extends ASTWrapperPsiElement implements PrologArithmeticEval {
 
-  public PrologLogicalNotImpl(@NotNull ASTNode node) {
+  public PrologArithmeticEvalImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull PrologVisitor visitor) {
-    visitor.visitLogicalNot(this);
+    visitor.visitArithmeticEval(this);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {

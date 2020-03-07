@@ -28,32 +28,26 @@ public class PrologParameterListImpl extends ASTWrapperPsiElement implements Pro
 
   @Override
   @NotNull
-  public List<PrologIdent> getIdentList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, PrologIdent.class);
+  public List<PrologCommonVal> getCommonValList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, PrologCommonVal.class);
   }
 
   @Override
   @NotNull
-  public List<PrologLogicalAnd> getLogicalAndList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, PrologLogicalAnd.class);
+  public List<PrologEquivBinary> getEquivBinaryList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, PrologEquivBinary.class);
   }
 
   @Override
-  @NotNull
-  public List<PrologLogicalNot> getLogicalNotList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, PrologLogicalNot.class);
+  @Nullable
+  public PrologLogicalNot getLogicalNot() {
+    return findChildByClass(PrologLogicalNot.class);
   }
 
   @Override
   @NotNull
   public List<PrologLogicalOr> getLogicalOrList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, PrologLogicalOr.class);
-  }
-
-  @Override
-  @NotNull
-  public List<PrologPredicate> getPredicateList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, PrologPredicate.class);
   }
 
 }

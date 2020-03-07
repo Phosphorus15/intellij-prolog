@@ -5,7 +5,7 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface PrologParameterList extends PsiElement {
+public interface PrologListConstructor extends PsiElement {
 
   @NotNull
   List<PrologCommonVal> getCommonValList();
@@ -13,8 +13,8 @@ public interface PrologParameterList extends PsiElement {
   @NotNull
   List<PrologEquivBinary> getEquivBinaryList();
 
-  @Nullable
-  PrologLogicalNot getLogicalNot();
+  @NotNull
+  List<PrologLogicalNot> getLogicalNotList();
 
   @NotNull
   List<PrologLogicalOr> getLogicalOrList();

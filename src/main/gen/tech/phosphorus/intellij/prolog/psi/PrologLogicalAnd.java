@@ -8,18 +8,15 @@ import com.intellij.psi.PsiElement;
 public interface PrologLogicalAnd extends PsiElement {
 
   @NotNull
-  List<PrologIdent> getIdentList();
+  List<PrologCommonVal> getCommonValList();
 
   @NotNull
-  List<PrologLogicalAnd> getLogicalAndList();
+  List<PrologEquivBinary> getEquivBinaryList();
 
-  @NotNull
-  List<PrologLogicalNot> getLogicalNotList();
+  @Nullable
+  PrologLogicalNot getLogicalNot();
 
   @NotNull
   List<PrologLogicalOr> getLogicalOrList();
-
-  @NotNull
-  List<PrologPredicate> getPredicateList();
 
 }

@@ -36,6 +36,47 @@ public class PrologParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // 'is' primary
+  public static boolean arithmetic_eval(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "arithmetic_eval")) return false;
+    if (!nextTokenIs(b, ARITH_EVAL)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, ARITH_EVAL);
+    r = r && primary(b, l + 1);
+    exit_section_(b, m, ARITHMETIC_EVAL, r);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // predicate | ident | literal | list_constructor | '_'
+  public static boolean common_val(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "common_val")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, COMMON_VAL, "<common val>");
+    r = predicate(b, l + 1);
+    if (!r) r = ident(b, l + 1);
+    if (!r) r = literal(b, l + 1);
+    if (!r) r = list_constructor(b, l + 1);
+    if (!r) r = consumeToken(b, WILDCARD);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // logical_not | logical_and | arithmetic_eval
+  public static boolean equiv_binary(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "equiv_binary")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, EQUIV_BINARY, "<equiv binary>");
+    r = logical_not(b, l + 1);
+    if (!r) r = logical_and(b, l + 1);
+    if (!r) r = arithmetic_eval(b, l + 1);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
   // primary
   public static boolean expr_body(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "expr_body")) return false;
@@ -67,6 +108,59 @@ public class PrologParser implements PsiParser, LightPsiParser {
     Marker m = enter_section_(b, l, _NONE_, IDENT, "<ident>");
     r = consumeToken(b, CONST_ID);
     if (!r) r = consumeToken(b, ATOM_ID);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // '[' ']' | '[' primary '|' primary ']' | '[' primary ']'
+  public static boolean list_constructor(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "list_constructor")) return false;
+    if (!nextTokenIs(b, LB)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = parseTokens(b, 0, LB, RB);
+    if (!r) r = list_constructor_1(b, l + 1);
+    if (!r) r = list_constructor_2(b, l + 1);
+    exit_section_(b, m, LIST_CONSTRUCTOR, r);
+    return r;
+  }
+
+  // '[' primary '|' primary ']'
+  private static boolean list_constructor_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "list_constructor_1")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, LB);
+    r = r && primary(b, l + 1);
+    r = r && consumeToken(b, LIST_CONS);
+    r = r && primary(b, l + 1);
+    r = r && consumeToken(b, RB);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // '[' primary ']'
+  private static boolean list_constructor_2(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "list_constructor_2")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, LB);
+    r = r && primary(b, l + 1);
+    r = r && consumeToken(b, RB);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // string | integer | float
+  public static boolean literal(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "literal")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, LITERAL, "<literal>");
+    r = consumeToken(b, STRING);
+    if (!r) r = consumeToken(b, INTEGER);
+    if (!r) r = consumeToken(b, FLOAT);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
@@ -132,13 +226,13 @@ public class PrologParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // const_id parameter_list?
+  // predicate_id parameter_list?
   public static boolean predicate(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "predicate")) return false;
     if (!nextTokenIs(b, CONST_ID)) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, CONST_ID);
+    r = predicate_id(b, l + 1);
     r = r && predicate_1(b, l + 1);
     exit_section_(b, m, PREDICATE, r);
     return r;
@@ -152,7 +246,19 @@ public class PrologParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // (predicate | logical_not | ident | operator_id) (predicate | logical_not | logical_and | logical_or | ident | operator_id)*
+  // const_id
+  public static boolean predicate_id(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "predicate_id")) return false;
+    if (!nextTokenIs(b, CONST_ID)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, CONST_ID);
+    exit_section_(b, m, PREDICATE_ID, r);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // (common_val | logical_not | operator_id) (common_val | equiv_binary | logical_or  | operator_id)*
   static boolean primary(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "primary")) return false;
     boolean r;
@@ -163,18 +269,17 @@ public class PrologParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-  // predicate | logical_not | ident | operator_id
+  // common_val | logical_not | operator_id
   private static boolean primary_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "primary_0")) return false;
     boolean r;
-    r = predicate(b, l + 1);
+    r = common_val(b, l + 1);
     if (!r) r = logical_not(b, l + 1);
-    if (!r) r = ident(b, l + 1);
     if (!r) r = consumeToken(b, OPERATOR_ID);
     return r;
   }
 
-  // (predicate | logical_not | logical_and | logical_or | ident | operator_id)*
+  // (common_val | equiv_binary | logical_or  | operator_id)*
   private static boolean primary_1(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "primary_1")) return false;
     while (true) {
@@ -185,15 +290,13 @@ public class PrologParser implements PsiParser, LightPsiParser {
     return true;
   }
 
-  // predicate | logical_not | logical_and | logical_or | ident | operator_id
+  // common_val | equiv_binary | logical_or  | operator_id
   private static boolean primary_1_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "primary_1_0")) return false;
     boolean r;
-    r = predicate(b, l + 1);
-    if (!r) r = logical_not(b, l + 1);
-    if (!r) r = logical_and(b, l + 1);
+    r = common_val(b, l + 1);
+    if (!r) r = equiv_binary(b, l + 1);
     if (!r) r = logical_or(b, l + 1);
-    if (!r) r = ident(b, l + 1);
     if (!r) r = consumeToken(b, OPERATOR_ID);
     return r;
   }

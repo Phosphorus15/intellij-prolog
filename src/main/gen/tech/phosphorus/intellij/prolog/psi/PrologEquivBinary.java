@@ -5,18 +5,15 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface PrologParameterList extends PsiElement {
+public interface PrologEquivBinary extends PsiElement {
 
-  @NotNull
-  List<PrologCommonVal> getCommonValList();
+  @Nullable
+  PrologArithmeticEval getArithmeticEval();
 
-  @NotNull
-  List<PrologEquivBinary> getEquivBinaryList();
+  @Nullable
+  PrologLogicalAnd getLogicalAnd();
 
   @Nullable
   PrologLogicalNot getLogicalNot();
-
-  @NotNull
-  List<PrologLogicalOr> getLogicalOrList();
 
 }

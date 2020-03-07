@@ -11,14 +11,14 @@ import static tech.phosphorus.intellij.prolog.psi.PrologTypes.*;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import tech.phosphorus.intellij.prolog.psi.*;
 
-public class PrologLogicalNotImpl extends ASTWrapperPsiElement implements PrologLogicalNot {
+public class PrologLiteralImpl extends ASTWrapperPsiElement implements PrologLiteral {
 
-  public PrologLogicalNotImpl(@NotNull ASTNode node) {
+  public PrologLiteralImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull PrologVisitor visitor) {
-    visitor.visitLogicalNot(this);
+    visitor.visitLiteral(this);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {
@@ -27,27 +27,21 @@ public class PrologLogicalNotImpl extends ASTWrapperPsiElement implements Prolog
   }
 
   @Override
-  @NotNull
-  public List<PrologCommonVal> getCommonValList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, PrologCommonVal.class);
-  }
-
-  @Override
-  @NotNull
-  public List<PrologEquivBinary> getEquivBinaryList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, PrologEquivBinary.class);
+  @Nullable
+  public PsiElement getFloat() {
+    return findChildByType(FLOAT);
   }
 
   @Override
   @Nullable
-  public PrologLogicalNot getLogicalNot() {
-    return findChildByClass(PrologLogicalNot.class);
+  public PsiElement getInteger() {
+    return findChildByType(INTEGER);
   }
 
   @Override
-  @NotNull
-  public List<PrologLogicalOr> getLogicalOrList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, PrologLogicalOr.class);
+  @Nullable
+  public PsiElement getString() {
+    return findChildByType(STRING);
   }
 
 }
