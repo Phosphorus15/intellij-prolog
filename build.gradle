@@ -1,7 +1,9 @@
 buildscript {
     repositories {
-        maven {
-            url "https://maven.aliyun.com/repository/gradle-plugin"
+        if (!System.getenv("CI")?.trim()) {
+            maven { url "https://maven.aliyun.com/repository/gradle-plugin" }
+        } else {
+            mavenCentral()
         }
     }
     dependencies {
@@ -22,9 +24,11 @@ version '1.0-SNAPSHOT'
 sourceCompatibility = 1.8
 
 repositories {
-
-    maven { url 'http://maven.aliyun.com/nexus/content/repositories/central/' }
-
+    if (!System.getenv("CI")?.trim()) {
+        maven { url 'http://maven.aliyun.com/nexus/content/repositories/central/' }
+    } else {
+        mavenCentral()
+    }
 }
 
 dependencies {
