@@ -21,8 +21,15 @@ jobs:
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
-
+    # Setup java environment
+    - uses: actions/setup-java@v1
+      with:
+        java-version: 11
+    - name: Settle gradlew
+      run: chmod +x gradlew
     - name: Gradle Command
+      env:
+        CI: GitHub_Workflows 
       uses: eskatos/gradle-command-action@v1
       with:
     # Gradle command line arguments, see gradle --help
