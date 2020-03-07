@@ -19,8 +19,8 @@ class PrologSyntaxHighlighter extends SyntaxHighlighterBase {
 
   override def getTokenHighlights(iElementType: IElementType): Array[TextAttributesKey] = {
     iElementType match {
-      case PrologTypes.COMMENT =>
-        Array(createTextAttributesKey("LINE_COMMENT", DefaultLanguageHighlighterColors.LINE_COMMENT))
+      case PrologTypes.COMMENT | PrologTypes.BLOCK_COMMENT =>
+        Array(createTextAttributesKey("COMMENT", DefaultLanguageHighlighterColors.LINE_COMMENT))
       case PrologTypes.DOT =>
         Array(DefaultLanguageHighlighterColors.SEMICOLON)
       case PrologTypes.UNIFY | PrologTypes.ARITH_EVAL | PrologTypes.WILDCARD =>

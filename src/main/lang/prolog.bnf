@@ -34,6 +34,7 @@
 
       space='regexp:\s+'
       comment='regexp:(%.*)'
+      block_comment='regexp:/\*(.|\n)*\*/'
       integer='regexp:\d+'
       float='regexp:\d+(\.d+)?([Ee]\d+)?' // strict floating mode
       const_id='regexp:\p{Lower}(\p{Alnum}|_|-|:)*'

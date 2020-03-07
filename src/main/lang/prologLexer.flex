@@ -15,6 +15,10 @@ import static tech.phosphorus.intellij.prolog.psi.PrologTypes.*;
   }
 %}
 
+%{}
+    private int blockCommentDepth = 0;
+%}
+
 %public
 %class PrologLexer
 %implements FlexLexer
@@ -27,12 +31,15 @@ WHITE_SPACE=\s+
 
 SPACE=[ \t\n\x0B\f\r]+
 COMMENT=(%.*)
+BLOCK_COMMENT="/*" !([^]* "*/" [^]*) ("*/")?
 INTEGER=[0-9]+
 FLOAT=[0-9]+(\.d+)?([Ee][0-9]+)?
 CONST_ID=[:lowercase:](([:letter:]|[:digit:])|_|-|:)*
 ATOM_ID=[:uppercase:]([:letter:]|[:digit:])*
 OPERATOR_ID=[<=>:!+\-*/]+
 STRING=('([^'\\]|\\.)*'|\"([^\"\\]|\\.)*\")
+
+%s IN_BLOCK_COMMENT
 
 %%
 <YYINITIAL> {
@@ -54,6 +61,8 @@ STRING=('([^'\\]|\\.)*'|\"([^\"\\]|\\.)*\")
   "_"                { return WILDCARD; }
   "is"               { return ARITH_EVAL; }
 
+  "/*"               { yybegin(IN_BLOCK_COMMENT); yypushback(2); }
+
   {SPACE}            { return SPACE; }
   {COMMENT}          { return COMMENT; }
   {INTEGER}          { return INTEGER; }
@@ -63,6 +72,17 @@ STRING=('([^'\\]|\\.)*'|\"([^\"\\]|\\.)*\")
   {OPERATOR_ID}      { return OPERATOR_ID; }
   {STRING}           { return STRING; }
 
+}
+
+<IN_BLOCK_COMMENT> {
+
+  "/*"    { blockCommentDepth ++; }
+
+  "*/"    { if(-- blockCommentDepth <= 0) { yybegin(YYINITIAL); return BLOCK_COMMENT; } } // treat as comment also
+
+  <<EOF>> { blockCommentDepth = 0; yybegin(YYINITIAL); return BLOCK_COMMENT; }
+
+  [^]     { }
 }
 
 [^] { return BAD_CHARACTER; }

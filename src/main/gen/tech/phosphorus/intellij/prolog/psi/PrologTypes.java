@@ -25,6 +25,7 @@ public interface PrologTypes {
 
   IElementType ARITH_EVAL = new PrologTokenType("is");
   IElementType ATOM_ID = new PrologTokenType("atom_id");
+  IElementType BLOCK_COMMENT = new PrologTokenType("block_comment");
   IElementType COMMA = new PrologTokenType(",");
   IElementType COMMENT = new PrologTokenType("comment");
   IElementType CONST_ID = new PrologTokenType("const_id");

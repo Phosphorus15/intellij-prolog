@@ -9,7 +9,7 @@ import tech.phosphorus.intellij.prolog.psi.{PrologFileType, PrologParser, Prolog
 
 object PrologParserDefinition {
   val WHITE_SPACES: TokenSet = TokenSet.create(TokenType.WHITE_SPACE)
-  val COMMENTS: TokenSet = TokenSet.create(PrologTypes.COMMENT)
+  val COMMENTS: TokenSet = TokenSet.create(PrologTypes.COMMENT, PrologTypes.BLOCK_COMMENT)
 
   val FILE = new IFileElementType(PrologLanguage.INSTANCE)
 }
