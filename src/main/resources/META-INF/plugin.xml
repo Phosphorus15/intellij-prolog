@@ -14,13 +14,18 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <lang.braceMatcher language="Prolog" implementationClass="tech.phosphorus.intellij.prolog.PrologBraceMatcher"/>
-        <lang.commenter language="Prolog" implementationClass="tech.phosphorus.intellij.prolog.MultiLineCommenter" />
+        <lang.commenter language="Prolog" implementationClass="tech.phosphorus.intellij.prolog.MultiLineCommenter"/>
         <lang.parserDefinition language="Prolog"
                                implementationClass="tech.phosphorus.intellij.prolog.PrologParserDefinition"/>
         <fileType name="Prolog file" implementationClass="tech.phosphorus.intellij.prolog.psi.PrologFileType"
                   fieldName="INSTANCE" language="Prolog" extensions="pl"/>
         <lang.syntaxHighlighterFactory language="Prolog"
                                        implementationClass="tech.phosphorus.intellij.prolog.PrologSyntaxHighlighterFactory"/>
+        <applicationService serviceImplementation="tech.phosphorus.intellij.prolog.settings.PrologStatePersistence"/>
+        <!-- projectService (if needed) -->
+        <applicationConfigurable groupId="language" displayName="Prolog"
+                                 id="PrologLanguageConfigurable"
+                                 instance="tech.phosphorus.intellij.prolog.settings.LanguageConfigurable"/>
     </extensions>
     <actions>
         <!-- Add your actions here -->
