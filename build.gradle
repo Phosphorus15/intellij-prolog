@@ -7,8 +7,8 @@ buildscript {
         }
     }
     dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.61"
         classpath "gradle.plugin.org.jetbrains.intellij.plugins:gradle-intellij-plugin:0.4.16"
+        classpath "gradle.plugin.org.jetbrains.intellij.plugins:gradle-grammarkit-plugin:2020.1"
     }
 }
 
@@ -17,6 +17,7 @@ plugins {
 }
 
 apply plugin: "org.jetbrains.intellij"
+apply plugin: "org.jetbrains.grammarkit"
 
 group 'tech.phosphorus'
 version '1.0-SNAPSHOT'
@@ -40,11 +41,30 @@ dependencies {
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
     if (!System.getenv("CI")?.trim()) {
-        localPath "C:\\Users\\${System.getProperty("user.name")}\\AppData\\Local\\JetBrains\\Toolbox\\apps\\IDEA-U\\ch-0\\193.6494.35"
+        localPath "G:\\JetBrains\\apps\\IDEA-U\\ch-0\\193.6494.35"
     }
 }
 
 sourceSets.main.scala.srcDirs = ['src/main/gen', 'src/main/scala']
+
+import org.jetbrains.grammarkit.tasks.*
+
+task generatePrologParser(type: GenerateParser) {
+    // source bnf file
+    source = "src/main/lang/prolog.bnf"
+
+    // optional, task-specific root for the generated files. Default: none
+    targetRoot = 'src/main/gen'
+
+    // path to a parser file, relative to the targetRoot
+    pathToParser = 'tech/phosphorus/intellij/prolog/psi/PrologParser.java'
+
+    // path to a directory with generated psi files, relative to the targetRoot
+    pathToPsiRoot = 'tech/phosphorus/intellij/prolog/psi/'
+
+    // if set, plugin will remove a parser output file and psi output directory before generating new ones. Default: false
+    purgeOldFiles = true
+}
 
 task "generateDirs" {
     sourceSets*.scala.srcDirs*.each {
