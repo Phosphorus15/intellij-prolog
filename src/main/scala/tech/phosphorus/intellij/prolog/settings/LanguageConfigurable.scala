@@ -1,9 +1,12 @@
 package tech.phosphorus.intellij.prolog.settings
 
+import java.io.File
+
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.options.SearchableConfigurable
 import com.intellij.openapi.ui.TextComponentAccessor
 import javax.swing.JComponent
+import tech.phosphorus.intellij.prolog.toolchain.PrologToolchain
 
 class LanguageConfigurable extends SearchableConfigurable {
 
