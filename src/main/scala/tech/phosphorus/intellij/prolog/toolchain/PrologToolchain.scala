@@ -1,13 +1,13 @@
 package tech.phosphorus.intellij.prolog.toolchain
 
 import java.io.{File, FileFilter}
-import java.nio.file.{Files, Path}
+import java.nio.file.{Files, Path, Paths}
 
 import com.intellij.execution.ExecutionException
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.process.{CapturingProcessHandler, ProcessOutput}
-import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.util.SystemInfo
+import tech.phosphorus.intellij.prolog.settings.PrologStatePersistence
 
 import scala.collection.mutable
 
@@ -19,7 +19,7 @@ class PrologToolchain(val location: Path) {
       try {
         new CapturingProcessHandler(cmd).runProcess(timeout)
       } catch {
-        case _ : ExecutionException => null
+        case _: ExecutionException => null
       }
     }
   }
@@ -38,13 +38,17 @@ class PrologToolchain(val location: Path) {
     (version, arch)
   }
 
+  lazy val specs: (String, String) = getSpec
+
   lazy val version: String = {
-    getSpec._1
+    specs._1
   }
 
   lazy val arch: String = {
-    getSpec._2
+    specs._2
   }
+
+  override def toString: String = f"$version-$arch"
 
   def description(): String = location.toString
 
@@ -52,7 +56,7 @@ class PrologToolchain(val location: Path) {
 
 object PrologToolchain {
   // have to use this annoying implicit
-  implicit def func2PropertyChangeListener(f: File => Boolean): FileFilter =
+  implicit def func2FileFilter(f: File => Boolean): FileFilter =
     new FileFilter {
       override def accept(pathname: File): Boolean = f(pathname)
     }
@@ -61,12 +65,20 @@ object PrologToolchain {
 
   val pathSuggestions: Array[Suggestion] = Array(suggestUnix, suggestWindows, suggestPath)
 
+  def suggestValidToolchain(): Option[PrologToolchain]
+  = suggestPaths().map(_.toPath).map(new PrologToolchain(_)).find(_.validate())
+
+  def suggestToolchainFromPersistence(): Option[PrologToolchain] =
+    Option(PrologStatePersistence.getInstance().getState.toolchain)
+      .filterNot(_.isEmpty).map(Paths.get(_)).filter(Files.exists(_))
+      .map(new PrologToolchain(_)).filter(_.validate())
+
   def suggestPaths(): Array[File]
   = pathSuggestions.foldLeft((x => x): Suggestion)(_ compose _)(Array.newBuilder).result()
 
   private def suggestPath(builder: mutable.ArrayBuilder[File])
   = builder ++= Option(System.getenv("PATH")).filterNot(_.isEmpty).getOrElse("").split(File.pathSeparator)
-    .filter(!_.isEmpty).map(new File(_)).filter(_.exists())
+    .filterNot(_.isEmpty).map(new File(_)).filter(_.exists())
 
   private def suggestUnix(builder: mutable.ArrayBuilder[File])
   = if (SystemInfo.isUnix) builder += (new File("/usr/local/bin"), new File("/usr/bin"))

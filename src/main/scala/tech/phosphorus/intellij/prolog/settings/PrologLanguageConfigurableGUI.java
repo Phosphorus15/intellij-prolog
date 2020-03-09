@@ -1,6 +1,7 @@
 package tech.phosphorus.intellij.prolog.settings;
 
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
+import com.intellij.ui.JBColor;
 
 import javax.swing.*;
 
@@ -13,6 +14,11 @@ public class PrologLanguageConfigurableGUI {
 
 	public TextFieldWithBrowseButton toolchainLocation;
 	private JPanel rootPanel;
+	public JLabel toolchainStatus;
+
+	public PrologLanguageConfigurableGUI () {
+		toolchainStatus.setForeground(JBColor.RED);
+	}
 
 	public JPanel getRootPanel() {
 		return rootPanel;
