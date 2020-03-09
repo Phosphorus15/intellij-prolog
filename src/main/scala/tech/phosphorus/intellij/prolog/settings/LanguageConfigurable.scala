@@ -2,23 +2,24 @@ package tech.phosphorus.intellij.prolog.settings
 
 import java.nio.file.Paths
 
+import com.intellij.openapi.Disposable
 import tech.phosphorus.intellij.prolog.RunnableImplicits._
-
 import com.intellij.openapi.application.{ApplicationManager, ModalityState}
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.options.SearchableConfigurable
 import com.intellij.openapi.ui.TextComponentAccessor
+import com.intellij.openapi.util.Disposer
 import com.intellij.ui.{DocumentAdapter, JBColor}
 import com.intellij.util.Alarm
 import javax.swing.JComponent
 import javax.swing.event.DocumentEvent
 import tech.phosphorus.intellij.prolog.toolchain.PrologToolchain
 
-class LanguageConfigurable extends SearchableConfigurable {
+class LanguageConfigurable extends SearchableConfigurable with Disposable {
 
   val configurableGUI = new PrologLanguageConfigurableGUI
 
-  val alarm = new Alarm(Alarm.ThreadToUse.POOLED_THREAD)
+  val alarm = new Alarm(Alarm.ThreadToUse.POOLED_THREAD, this)
 
 
   override def getDisplayName: String = "Prolog"
@@ -52,10 +53,12 @@ class LanguageConfigurable extends SearchableConfigurable {
   def refreshToolchainInfo(): Unit = {
     alarm.cancelAllRequests()
     alarm.addRequest(() => {
+      if (Disposer.isDisposed(this)) return
       val toolchain = new PrologToolchain(Paths.get(configurableGUI.toolchainLocation.getText))
       val application = ApplicationManager.getApplication
       if (toolchain.validate()) {
         val descriptor = toolchain.toString
+        if (Disposer.isDisposed(this)) return
         application.invokeLater(() => {
           configurableGUI.toolchainStatus.setText(descriptor)
           configurableGUI.toolchainStatus.setForeground(JBColor.foreground())
@@ -77,4 +80,6 @@ class LanguageConfigurable extends SearchableConfigurable {
 
   override def isModified: Boolean =
     PrologStatePersistence.getInstance().getState.toolchain != configurableGUI.toolchainLocation.getText
+
+  override def dispose(): Unit = {}
 }
