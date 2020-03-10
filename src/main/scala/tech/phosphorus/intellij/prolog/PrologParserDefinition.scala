@@ -5,7 +5,7 @@ import com.intellij.lexer.Lexer
 import com.intellij.openapi.project.Project
 import com.intellij.psi.tree.{IFileElementType, TokenSet}
 import com.intellij.psi.{FileViewProvider, PsiElement, PsiFile, TokenType}
-import tech.phosphorus.intellij.prolog.psi.{PrologFileType, PrologParser, PrologPsiFile, PrologTypes}
+import tech.phosphorus.intellij.prolog.psi.{PrologParser, PrologPsiFile, PrologTypes}
 
 object PrologParserDefinition {
   val WHITE_SPACES: TokenSet = TokenSet.create(TokenType.WHITE_SPACE)

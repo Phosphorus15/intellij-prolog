@@ -22,13 +22,10 @@ object SwiPrologLinter {
 
 class SwiPrologLinter(val toolchain: PrologToolchain) {
 
-  def canLint(): Boolean = toolchain.validate()
-
-  var err : java.util.List[String] = _
-  var out : java.util.List[String] = _
+  def canLint: Boolean = toolchain.validate()
 
   def lintFile(path: String): Array[LinterReport] = {
-    if (canLint()) {
+    if (canLint) {
       println(path)
       val ttyOut = new GeneralCommandLine(toolchain.executablePath.toString)
         .withParameters("-g", "halt", "-l", path)

@@ -1,17 +1,13 @@
 package tech.phosphorus.intellij.prolog.annotator
 
-import java.nio.file.attribute.FileAttribute
 import java.nio.file.{Files, Paths}
 
-import com.intellij.lang.annotation.{Annotation, AnnotationHolder, ExternalAnnotator, HighlightSeverity}
-import com.intellij.lang.xml.XMLExternalAnnotator
+import com.intellij.lang.annotation.{Annotation, AnnotationHolder, ExternalAnnotator}
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.util.TextRange
 import com.intellij.psi.{PsiDocumentManager, PsiElement, PsiFile}
-import com.intellij.util.text.TextRanges
-import tech.phosphorus.intellij.prolog.inspector.{Error, LinterReport, SwiPrologLinter, Warning}
+import tech.phosphorus.intellij.prolog.inspector.{Error, LinterReport, SwiPrologLinter}
+import tech.phosphorus.intellij.prolog.psi.impl.PrologPredicateImpl
 import tech.phosphorus.intellij.prolog.psi.{PrologExprBody, PrologExprHead, PrologTrailingExpr}
-import tech.phosphorus.intellij.prolog.psi.impl.{PrologPredicateIdImpl, PrologPredicateImpl}
 import tech.phosphorus.intellij.prolog.toolchain.PrologToolchain
 
 import scala.collection.mutable

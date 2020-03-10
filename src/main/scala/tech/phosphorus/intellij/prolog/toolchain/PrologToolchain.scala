@@ -4,12 +4,12 @@ import java.io.{File, FileFilter}
 import java.nio.file.{Files, Path, Paths}
 
 import tech.phosphorus.intellij.prolog.FunctionalImplicits._
-
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.openapi.util.SystemInfo
 import tech.phosphorus.intellij.prolog.settings.{PrologState, PrologStatePersistence}
 
 import scala.collection.mutable
+import scala.language.implicitConversions
 
 // Currently there's only swi support
 class PrologToolchain(val location: Path) {
