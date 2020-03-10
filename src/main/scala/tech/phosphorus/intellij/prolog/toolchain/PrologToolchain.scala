@@ -3,38 +3,28 @@ package tech.phosphorus.intellij.prolog.toolchain
 import java.io.{File, FileFilter}
 import java.nio.file.{Files, Path, Paths}
 
-import com.intellij.execution.ExecutionException
+import tech.phosphorus.intellij.prolog.FunctionalImplicits._
+
 import com.intellij.execution.configurations.GeneralCommandLine
-import com.intellij.execution.process.{CapturingProcessHandler, ProcessOutput}
 import com.intellij.openapi.util.SystemInfo
-import tech.phosphorus.intellij.prolog.settings.PrologStatePersistence
+import tech.phosphorus.intellij.prolog.settings.{PrologState, PrologStatePersistence}
 
 import scala.collection.mutable
 
 // Currently there's only swi support
 class PrologToolchain(val location: Path) {
 
-  implicit class ExecutedGeneralCommandLine(cmd: GeneralCommandLine) {
-    def captureStdOutput(timeout: Int = 1000): ProcessOutput = {
-      try {
-        new CapturingProcessHandler(cmd).runProcess(timeout)
-      } catch {
-        case _: ExecutionException => null
-      }
-    }
-  }
-
   def validate(): Boolean =
     Files.isExecutable(executablePath)
 
-  protected def executablePath: Path = {
+  def executablePath: Path = {
     location.resolve(if (SystemInfo.isWindows) "swipl.exe" else "swipl")
   }
 
   def getSpec: (String, String) = {
     val format = ".* (\\d+\\.\\d+\\.\\d+) for (.*)".r
     val format(version, arch) = new GeneralCommandLine(executablePath.toString).withParameters("--version")
-      .captureStdOutput().getStdout.trim
+      .captureOutput().getStdout.trim
     (version, arch)
   }
 
@@ -64,6 +54,21 @@ object PrologToolchain {
   type Suggestion = mutable.ArrayBuilder[File] => mutable.ArrayBuilder[File]
 
   val pathSuggestions: Array[Suggestion] = Array(suggestUnix, suggestWindows, suggestPath)
+
+  def instanceToolchain(): String = {
+    val location = PrologToolchain.suggestToolchainFromPersistence() match {
+      case Some(toolchain) => toolchain.location.toString
+      case None =>
+        PrologToolchain.suggestValidToolchain() match {
+          case Some(toolchain) =>
+            toolchain.location.toString
+          case None => PrologStatePersistence.getInstance().getState.toolchain
+        }
+    }
+    // re-insure that the toolchain was preserved in persistent component
+    PrologStatePersistence.getInstance().loadState(new PrologState(location))
+    location
+  }
 
   def suggestValidToolchain(): Option[PrologToolchain]
   = suggestPaths().map(_.toPath).map(new PrologToolchain(_)).find(_.validate())

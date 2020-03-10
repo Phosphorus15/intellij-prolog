@@ -26,17 +26,7 @@ class LanguageConfigurable extends SearchableConfigurable with Disposable {
 
   // Setting up settings component, try to grab toolchain here
   override def createComponent(): JComponent = {
-    val location: String = PrologToolchain.suggestToolchainFromPersistence() match {
-      case Some(toolchain) => toolchain.location.toString
-      case None =>
-        PrologToolchain.suggestValidToolchain() match {
-          case Some(toolchain) =>
-            toolchain.location.toString
-          case None => PrologStatePersistence.getInstance().getState.toolchain
-        }
-    }
-    // re-insure that the toolchain was preserved in persistent component
-    PrologStatePersistence.getInstance().loadState(new PrologState(location))
+    val location: String = PrologToolchain.instanceToolchain()
     configurableGUI.toolchainLocation.setText(location)
     configurableGUI.toolchainLocation
       .addBrowseFolderListener("Choose path to swipl", null, null
