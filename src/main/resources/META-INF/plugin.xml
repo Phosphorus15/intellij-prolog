@@ -13,6 +13,7 @@
     <depends>com.intellij.modules.platform</depends>
 
     <extensions defaultExtensionNs="com.intellij">
+        <externalAnnotator language="Prolog" implementationClass="tech.phosphorus.intellij.prolog.annotator.PrologExternalAnnotator" />
         <lang.braceMatcher language="Prolog" implementationClass="tech.phosphorus.intellij.prolog.PrologBraceMatcher"/>
         <lang.commenter language="Prolog" implementationClass="tech.phosphorus.intellij.prolog.MultiLineCommenter"/>
         <lang.parserDefinition language="Prolog"

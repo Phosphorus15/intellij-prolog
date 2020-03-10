@@ -45,7 +45,9 @@
 }
 
 root ::= rule*
-private rule ::= !<<eof>> ((expr_head ((':-' | '-->') expr_body)?) | (':-' expr_body)) '.'
+private rule ::= !<<eof>> ((expr_head ((':-' | '-->') expr_body)?) | trailing_expr) '.'
+
+trailing_expr ::= ':-' expr_body
 
 expr_head ::= predicate
 
