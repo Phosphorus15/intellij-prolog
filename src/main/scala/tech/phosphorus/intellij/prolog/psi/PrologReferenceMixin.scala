@@ -78,8 +78,7 @@ class NameIdentifierResolveProcessor(name: String) extends ResolveProcessor[PsiE
       println("accepted hash " + psiElement.hashCode() + " " + psiElement.getText + " " + name)
       if (name.equals(psiElement.getText)) {
         println("finally accepted")
-        // one step above predicate id gives its full declaration
-        candidates += new PsiElementResolveResult(psiElement.getParent, true)
+        candidates += new PsiElementResolveResult(psiElement, true)
         println("candidates len " + candidates.size)
       }
     }

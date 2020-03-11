@@ -11,7 +11,8 @@ class PrologGotoDeclarationHandler extends GotoDeclarationHandler{
     if (psiElement.getLanguage == PrologLanguage.INSTANCE) {
       val id = psiElement.getParent
       return id match {
-        case pid: PrologRefPredicateIdImpl => pid.multiResolve(false).map(_.getElement)
+        // one step above predicate id gives its full declaration
+        case pid: PrologRefPredicateIdImpl => pid.multiResolve(false).map(_.getElement.getParent)
         case _ => Array()
       }
     }
