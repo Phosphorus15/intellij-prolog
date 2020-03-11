@@ -45,7 +45,9 @@
 }
 
 root ::= rule*
-private rule ::= !<<eof>> ((expr_head ((':-' | '-->') expr_body)?) | trailing_expr) '.'
+private rule ::= !<<eof>> (toplevel_expr | trailing_expr) '.'
+
+toplevel_expr ::= (expr_head ((':-' | '-->') expr_body)?)
 
 trailing_expr ::= ':-' expr_body
 
@@ -55,7 +57,16 @@ expr_body ::= primary
 
 predicate ::= predicate_id parameter_list?
 
-predicate_id ::= const_id
+common_predicate ::= ref_predicate_id parameter_list?
+
+predicate_id ::= const_id {
+implements=['com.intellij.psi.PsiNameIdentifierOwner']
+mixin='tech.phosphorus.intellij.prolog.psi.PrologDeclarationMixin'
+}
+
+ref_predicate_id ::= const_id {
+mixin='tech.phosphorus.intellij.prolog.psi.PrologReferenceMixin'
+}
 
 parameter_list ::= '(' primary? ')'
 
@@ -73,10 +84,12 @@ literal ::= string | integer | float
 
 list_constructor ::= '[' ']' | '[' primary '|' primary ']' | '[' primary ']'
 
-common_val ::= predicate | ident | literal | list_constructor | '_'
+common_val ::= common_predicate | ident | literal | list_constructor | '_'
 
 private common_val_or_paren ::= common_val | '(' common_val ')' | '{' common_val '}'
 
 private primary ::= (common_val_or_paren | logical_not | operator_id) (common_val_or_paren | equiv_binary | logical_or  | operator_id)*
 
-ident ::= (const_id | atom_id)
+ident ::= (const_id | atom_id) {
+mixin='tech.phosphorus.intellij.prolog.psi.PrologReferenceMixin'
+}

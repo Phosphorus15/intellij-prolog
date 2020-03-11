@@ -6,8 +6,7 @@ import com.intellij.lang.annotation.{Annotation, AnnotationHolder, ExternalAnnot
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.psi.{PsiDocumentManager, PsiElement, PsiFile}
 import tech.phosphorus.intellij.prolog.inspector.{Error, LinterReport, SwiPrologLinter}
-import tech.phosphorus.intellij.prolog.psi.impl.PrologPredicateImpl
-import tech.phosphorus.intellij.prolog.psi.{PrologExprBody, PrologExprHead, PrologTrailingExpr}
+import tech.phosphorus.intellij.prolog.psi._
 import tech.phosphorus.intellij.prolog.toolchain.PrologToolchain
 
 import scala.collection.mutable
@@ -52,12 +51,12 @@ class PrologExternalAnnotator extends ExternalAnnotator[AnnotatorTask, Array[Lin
     val candidates = searchElementAt(file, linterReport.line - 1)
     val element = if (linterReport.location.isEmpty) {
       var region = candidates.sortWith(_.getTextRange.getLength > _.getTextRange.getLength).head
-      while (region.getParent != null && !(region.isInstanceOf[PrologTrailingExpr] || region.isInstanceOf[PrologPredicateImpl] || region.isInstanceOf[PrologExprHead] || region.isInstanceOf[PrologExprBody])) {
+      while (region.getParent != null && !(region.isInstanceOf[PrologToplevelExpr] || region.isInstanceOf[PrologTrailingExpr] || region.isInstanceOf[PrologPredicate] || region.isInstanceOf[PrologExprHead] || region.isInstanceOf[PrologExprBody])) {
         region = region.getParent
       }
       region
     } else {
-      val targetOffset = calcOffset(document.getCharsSequence, document.getLineStartOffset(linterReport.line - 1), linterReport.location.get)
+      val targetOffset = calcOffset(document.getText, document.getLineStartOffset(linterReport.line - 1), linterReport.location.get)
       if (targetOffset > 0 && file.getViewProvider.findElementAt(targetOffset) != null) {
         // somewhat wild ?
         file.getViewProvider.findElementAt(targetOffset - 1)
