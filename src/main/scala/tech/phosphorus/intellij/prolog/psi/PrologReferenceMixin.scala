@@ -1,5 +1,7 @@
 package tech.phosphorus.intellij.prolog.psi
 
+import java.io.File
+
 import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
 import com.intellij.openapi.util.TextRange
@@ -25,7 +27,8 @@ abstract class PrologReferenceMixin(node: ASTNode) extends ASTWrapperPsiElement(
 
   override def getReferences: Array[PsiReference] = Array(this)
 
-  override def isReferenceTo(reference: PsiElement): Boolean = reference == resolve()
+  // considering that multiple target might match
+  override def isReferenceTo(reference: PsiElement): Boolean = multiResolve(false).contains(reference)
 
   override def getCanonicalText: String = getText
 
@@ -75,7 +78,8 @@ class NameIdentifierResolveProcessor(name: String) extends ResolveProcessor[PsiE
       println("accepted hash " + psiElement.hashCode() + " " + psiElement.getText + " " + name)
       if (name.equals(psiElement.getText)) {
         println("finally accepted")
-        candidates += new PsiElementResolveResult(psiElement, true)
+        // one step above predicate id gives its full declaration
+        candidates += new PsiElementResolveResult(psiElement.getParent, true)
         println("candidates len " + candidates.size)
       }
     }

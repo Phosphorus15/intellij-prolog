@@ -38,7 +38,6 @@ abstract class PrologTopLevelDeclarationMixin(node: ASTNode) extends ASTWrapperP
   val elementType: PsiElement = getNameIdentifier
 
   override def getNameIdentifier: PsiElement = {
-    println("candidate " + hashCode() + " " + getFirstChild.getFirstChild.getFirstChild.getText)
     getFirstChild.getFirstChild.getFirstChild
   }
 
