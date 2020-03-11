@@ -39,12 +39,14 @@ abstract class PrologReferenceMixin(node: ASTNode) extends ASTWrapperPsiElement(
     if (file == null) return ResolveResult.EMPTY_ARRAY
     if (!isValid || getProject.isDisposed) return ResolveResult.EMPTY_ARRAY
     println("entering resolution for file " + file.getName)
-    ResolveCache.getInstance(getProject).resolveWithCaching(
+    val cc = ResolveCache.getInstance(getProject).resolveWithCaching(
       this, new PolyVariantResolver[PrologReferenceMixin] {
         override def resolve(t: PrologReferenceMixin, b: Boolean): Array[ResolveResult] =
           ReferenceResolution.resolveWith(new NameIdentifierResolveProcessor(t.getCanonicalText), t)
       }, true, b, file
     )
+    println("cached result " + cc.length)
+    cc
   }
 
   override def handleElementRename(s: String): PsiElement = {
@@ -62,19 +64,22 @@ abstract class ResolveProcessor[T] extends PsiScopeProcessor {
 }
 
 class NameIdentifierResolveProcessor(name: String) extends ResolveProcessor[PsiElementResolveResult] {
-  val candidates: mutable.MutableList[PsiElementResolveResult] = mutable.MutableList[PsiElementResolveResult]()
+  val candidates: mutable.HashSet[PsiElementResolveResult] = mutable.HashSet[PsiElementResolveResult]()
 
   override def getCandidates: Array[ResolveResult] = candidates.toArray
 
   override def execute(psiElement: PsiElement, resolveState: ResolveState): Boolean = {
-    if (candidates.nonEmpty) return false
-    if (psiElement.isInstanceOf[PrologNameIdentifier]) {
-      if (name == psiElement.getText) {
+    // we should allow multiple-candidates
+    println(f"new element within $psiElement ${psiElement.getClass} \n ${psiElement.getParent.getText}")
+    if (psiElement.isInstanceOf[PrologPredicateId]) {
+      println("accepted hash " + psiElement.hashCode() + " " + psiElement.getText + " " + name)
+      if (name.equals(psiElement.getText)) {
+        println("finally accepted")
         candidates += new PsiElementResolveResult(psiElement, true)
-        return false
+        println("candidates len " + candidates.size)
       }
     }
-    true
+    true // keep processing
   }
 }
 
@@ -105,6 +110,8 @@ object ReferenceResolution {
     val file = ref.getElement.getContainingFile
     println("started resolution in file " + file.getName)
     treeWalkUp(processor, ref.getElement, file)
-    processor.getCandidates
+    val c = processor.getCandidates
+    println(s"${c.length}")
+    c
   }
 }

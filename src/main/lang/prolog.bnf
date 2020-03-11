@@ -47,7 +47,10 @@
 root ::= rule*
 private rule ::= !<<eof>> (toplevel_expr | trailing_expr) '.'
 
-toplevel_expr ::= (expr_head ((':-' | '-->') expr_body)?)
+toplevel_expr ::= (expr_head ((':-' | '-->') expr_body)?) {
+implements=['com.intellij.psi.PsiNameIdentifierOwner']
+mixin='tech.phosphorus.intellij.prolog.psi.PrologTopLevelDeclarationMixin'
+}
 
 trailing_expr ::= ':-' expr_body
 
