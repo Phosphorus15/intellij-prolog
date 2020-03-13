@@ -15,6 +15,7 @@ public class PrologLanguageConfigurableGUI {
 	public TextFieldWithBrowseButton toolchainLocation;
 	private JPanel rootPanel;
 	public JLabel toolchainStatus;
+	public TextFieldWithBrowseButton stdlibLocation;
 
 	public PrologLanguageConfigurableGUI () {
 		toolchainStatus.setForeground(JBColor.RED);

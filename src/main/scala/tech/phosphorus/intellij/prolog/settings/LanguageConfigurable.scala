@@ -21,15 +21,20 @@ class LanguageConfigurable extends SearchableConfigurable with Disposable {
 
   val alarm = new Alarm(Alarm.ThreadToUse.POOLED_THREAD, this)
 
-
   override def getDisplayName: String = "Prolog"
 
   // Setting up settings component, try to grab toolchain here
   override def createComponent(): JComponent = {
     val location: String = PrologToolchain.instanceToolchain()
+    val library: String = PrologToolchain.instanceLibrary(location)
+    println(library)
     configurableGUI.toolchainLocation.setText(location)
+    configurableGUI.stdlibLocation.setText(library)
     configurableGUI.toolchainLocation
       .addBrowseFolderListener("Choose path to swipl", null, null
+        , FileChooserDescriptorFactory.createSingleFolderDescriptor, TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT)
+    configurableGUI.stdlibLocation
+      .addBrowseFolderListener("Choose path to stdlib (commonly the `library` dir)", null, null
         , FileChooserDescriptorFactory.createSingleFolderDescriptor, TextComponentAccessor.TEXT_FIELD_WHOLE_TEXT)
     configurableGUI.toolchainLocation.getChildComponent.getDocument.addDocumentListener(
       new DocumentAdapter {
@@ -63,13 +68,15 @@ class LanguageConfigurable extends SearchableConfigurable with Disposable {
   }
 
   override def apply(): Unit = {
-    PrologStatePersistence.getInstance().loadState(new PrologState(configurableGUI.toolchainLocation.getText))
+    PrologStatePersistence.getInstance().loadState(new PrologState(configurableGUI.toolchainLocation.getText, configurableGUI.stdlibLocation.getText))
   }
 
   override def getId: String = "PrologLanguageConfigurable"
 
-  override def isModified: Boolean =
-    PrologStatePersistence.getInstance().getState.toolchain != configurableGUI.toolchainLocation.getText
+  override def isModified: Boolean = {
+    val state = PrologStatePersistence.getInstance().getState
+    state.stdLibrary != configurableGUI.stdlibLocation.getText || state.toolchain != configurableGUI.toolchainLocation.getText
+  }
 
   override def dispose(): Unit = {}
 }

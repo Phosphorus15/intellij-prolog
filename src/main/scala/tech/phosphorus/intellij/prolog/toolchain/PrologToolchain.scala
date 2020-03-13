@@ -6,19 +6,41 @@ import java.nio.file.{Files, Path, Paths}
 import tech.phosphorus.intellij.prolog.FunctionalImplicits._
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.openapi.util.SystemInfo
+import org.jetbrains.annotations.Contract
 import tech.phosphorus.intellij.prolog.settings.{PrologState, PrologStatePersistence}
 
 import scala.collection.mutable
 import scala.language.implicitConversions
 
 // Currently there's only swi support
-class PrologToolchain(val location: Path) {
+class PrologToolchain(val location: Path, var library: Path = null) {
 
   def validate(): Boolean =
     Files.isExecutable(executablePath)
 
+  def validateLibrary(): Boolean =
+    Files.isDirectory(stdlibPath)
+
+  // Update custom library location from persistence
+  def updateLibrary(): Boolean = {
+    val newLib = PrologStatePersistence.getInstance().getState.stdLibrary
+    if(newLib != null) {
+      library = Paths.get(newLib)
+    }
+    validateLibrary()
+  }
+
+  protected def validateLibraryRaw(): Boolean = {
+    val newLib = PrologStatePersistence.getInstance().getState.stdLibrary
+    newLib != null && Files.isDirectory(Paths.get(newLib))
+  }
+
   def executablePath: Path = {
     location.resolve(if (SystemInfo.isWindows) "swipl.exe" else "swipl")
+  }
+
+  def stdlibPath: Path = {
+    Option(library).getOrElse(location.resolve("../library").toRealPath())
   }
 
   def getSpec: (String, String) = {
@@ -55,7 +77,8 @@ object PrologToolchain {
 
   val pathSuggestions: Array[Suggestion] = Array(suggestUnix, suggestWindows, suggestPath)
 
-  def instanceToolchain(): String = {
+  /** Note that this function changes persistent value */
+  @Contract(pure = false) def instanceToolchain(): String = {
     val location = PrologToolchain.suggestToolchainFromPersistence() match {
       case Some(toolchain) => toolchain.location.toString
       case None =>
@@ -68,6 +91,18 @@ object PrologToolchain {
     // re-insure that the toolchain was preserved in persistent component
     PrologStatePersistence.getInstance().loadState(new PrologState(location))
     location
+  }
+
+  /** Note that this function changes persistent value */
+  @Contract(pure = false) def instanceLibrary(toolchainLocation: String): String = {
+    if(toolchainLocation == null || toolchainLocation.trim.isEmpty) return ""
+    val toolchainVanilla = new PrologToolchain(Paths.get(toolchainLocation))
+    val toolchainPersistence = new PrologToolchain(Paths.get(toolchainLocation))
+    if(toolchainPersistence.validate()) {
+      if(toolchainPersistence.validateLibraryRaw()) return Option(toolchainPersistence.library).map(_.toString).getOrElse("")
+      PrologStatePersistence.getInstance().loadState(new PrologState(toolchainLocation, toolchainVanilla.stdlibPath.toString))
+      toolchainVanilla.stdlibPath.toString
+    } else ""
   }
 
   def suggestValidToolchain(): Option[PrologToolchain]
