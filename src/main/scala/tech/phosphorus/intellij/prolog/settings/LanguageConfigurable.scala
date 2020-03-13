@@ -27,7 +27,7 @@ class LanguageConfigurable extends SearchableConfigurable with Disposable {
   override def createComponent(): JComponent = {
     val location: String = PrologToolchain.instanceToolchain()
     val library: String = PrologToolchain.instanceLibrary(location)
-    println(library)
+//    println(library)
     configurableGUI.toolchainLocation.setText(location)
     configurableGUI.stdlibLocation.setText(library)
     configurableGUI.toolchainLocation

@@ -1,18 +1,32 @@
 package tech.phosphorus.intellij.prolog.psi
 
-import java.io.File
-
 import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
 import com.intellij.openapi.util.TextRange
+import com.intellij.psi._
 import com.intellij.psi.impl.source.resolve.ResolveCache
 import com.intellij.psi.impl.source.resolve.ResolveCache.PolyVariantResolver
 import com.intellij.psi.scope.PsiScopeProcessor
-import com.intellij.psi._
 import com.intellij.util.IncorrectOperationException
 import tech.phosphorus.intellij.prolog.PrologLanguage
 
 import scala.collection.mutable
+
+abstract class PrologPredicateReferenceMixin(node: ASTNode) extends PrologReferenceMixin(node)
+
+abstract class PrologAtomReferenceMixin(node: ASTNode) extends PrologReferenceMixin(node) {
+  override def multiResolve(b: Boolean): Array[ResolveResult] = {
+    val file = getContainingFile
+    if (file == null) return ResolveResult.EMPTY_ARRAY
+    if (!isValid || getProject.isDisposed) return ResolveResult.EMPTY_ARRAY
+    ResolveCache.getInstance(getProject).resolveWithCaching(
+      this, new PolyVariantResolver[PrologReferenceMixin] {
+        override def resolve(t: PrologReferenceMixin, b: Boolean): Array[ResolveResult] =
+          ReferenceResolution.resolveWith(new NameIdentifierResolveProcessor(t.getCanonicalText), t)
+      }, true, b, file
+    )
+  }
+}
 
 abstract class PrologReferenceMixin(node: ASTNode) extends ASTWrapperPsiElement(node) with PsiPolyVariantReference {
   override def isSoft = true
@@ -21,9 +35,9 @@ abstract class PrologReferenceMixin(node: ASTNode) extends ASTWrapperPsiElement(
 
   override def getName: String = getText
 
-  override def getElement: PrologReferenceMixin = this
+  override def getElement: PsiElement = this
 
-  override def getReference: PrologReferenceMixin = this
+  override def getReference: PsiReference = this
 
   override def getReferences: Array[PsiReference] = Array(this)
 
@@ -88,7 +102,7 @@ class NameIdentifierResolveProcessor(name: String) extends ResolveProcessor[PsiE
 object ReferenceResolution {
   def treeWalkUp(processor: PsiScopeProcessor,
                  entrance: PsiElement,
-                 maxScope: PsiElement,
+                 maxScope: PsiElement => Boolean,
                  state: ResolveState = ResolveState.initial()): Boolean = {
     if (!entrance.isValid) return false
     var prevParent = entrance
@@ -99,7 +113,7 @@ object ReferenceResolution {
     while (scope != null) {
 //      println(f"resolution scope ${scope.getText} ${scope.getClass}")
       if (!scope.processDeclarations(processor, state, prevParent, entrance)) return false
-      if (scope == maxScope) scope = null
+      if (maxScope(scope)) scope = null
       else {
         prevParent = scope
         scope = prevParent.getContext
@@ -108,12 +122,20 @@ object ReferenceResolution {
     true
   }
 
+  def resolveWithCond[T](processor: ResolveProcessor[T], ref: PsiReference, cond: PsiElement => Boolean): Array[ResolveResult] = {
+    //    println("started resolution in file " + file.getName)
+    treeWalkUp(processor, ref.getElement, cond)
+    processor.getCandidates
+    //    println(s"${c.length}")
+    //    c
+  }
+
   def resolveWith[T](processor: ResolveProcessor[T], ref: PsiReference): Array[ResolveResult] = {
     val file = ref.getElement.getContainingFile
 //    println("started resolution in file " + file.getName)
-    treeWalkUp(processor, ref.getElement, file)
-    val c = processor.getCandidates
-    println(s"${c.length}")
-    c
+    treeWalkUp(processor, ref.getElement, _ == file)
+    processor.getCandidates
+//    println(s"${c.length}")
+//    c
   }
 }

@@ -68,10 +68,12 @@ mixin='tech.phosphorus.intellij.prolog.psi.PrologDeclarationMixin'
 }
 
 ref_predicate_id ::= const_id {
-mixin='tech.phosphorus.intellij.prolog.psi.PrologReferenceMixin'
+mixin='tech.phosphorus.intellij.prolog.psi.PrologPredicateReferenceMixin'
 }
 
-parameter_list ::= '(' primary? ')'
+parameter_list ::= '(' primary? ')' {
+mixin='tech.phosphorus.intellij.prolog.psi.PrologParameterListMixin'
+}
 
 logical_or ::= ';' primary
 
