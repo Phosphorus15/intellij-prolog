@@ -97,9 +97,8 @@ object PrologToolchain {
   @Contract(pure = false) def instanceLibrary(toolchainLocation: String): String = {
     if(toolchainLocation == null || toolchainLocation.trim.isEmpty) return ""
     val toolchainVanilla = new PrologToolchain(Paths.get(toolchainLocation))
-    val toolchainPersistence = new PrologToolchain(Paths.get(toolchainLocation))
-    if(toolchainPersistence.validate()) {
-      if(toolchainPersistence.validateLibraryRaw()) return Option(toolchainPersistence.library).map(_.toString).getOrElse("")
+    if(toolchainVanilla.validate()) {
+      if(toolchainVanilla.validateLibraryRaw()) return Option(toolchainVanilla.library).map(_.toString).getOrElse("")
       PrologStatePersistence.getInstance().loadState(new PrologState(toolchainLocation, toolchainVanilla.stdlibPath.toString))
       toolchainVanilla.stdlibPath.toString
     } else ""
