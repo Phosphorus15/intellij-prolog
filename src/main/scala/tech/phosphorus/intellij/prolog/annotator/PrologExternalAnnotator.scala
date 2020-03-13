@@ -3,6 +3,7 @@ package tech.phosphorus.intellij.prolog.annotator
 import java.nio.file.{Files, Paths}
 
 import com.intellij.lang.annotation.{Annotation, AnnotationHolder, ExternalAnnotator}
+import com.intellij.notification.{NotificationGroup, NotificationType, SingletonNotificationManager}
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.psi.{PsiDocumentManager, PsiElement, PsiFile}
 import tech.phosphorus.intellij.prolog.inspector.{Error, LinterReport, SwiPrologLinter}
@@ -11,7 +12,11 @@ import tech.phosphorus.intellij.prolog.toolchain.PrologToolchain
 
 import scala.collection.mutable
 
-class AnnotatorTask(val file: String, val linter: SwiPrologLinter)
+class AnnotatorTask
+
+case class Task(val file: String, val linter: SwiPrologLinter) extends AnnotatorTask
+
+case class Abort() extends AnnotatorTask
 
 class PrologExternalAnnotator extends ExternalAnnotator[AnnotatorTask, Array[LinterReport]] {
 
@@ -19,16 +24,24 @@ class PrologExternalAnnotator extends ExternalAnnotator[AnnotatorTask, Array[Lin
 
   override def collectInformation(file: PsiFile): AnnotatorTask = {
     println(f"annotate request for ${file.getVirtualFile.getCanonicalPath}")
-    new AnnotatorTask(file.getText, new SwiPrologLinter(toolchain))
+    if (!toolchain.validate()) {
+      new SingletonNotificationManager(NotificationGroup.balloonGroup("Prolog Toolchain Not Found"), NotificationType.WARNING, null)
+        .notify("Prolog toolchain not detected", "configure a valid toolchain to enable code linter")
+      Abort()
+    } else Task(file.getText, new SwiPrologLinter(toolchain))
   }
 
-  override def doAnnotate(collectedInfo: AnnotatorTask): Array[LinterReport] = {
-    val application = ApplicationManager.getApplication
-    if (application != null && application.isReadAccessAllowed && !application.isUnitTestMode) return Array()
-    println(f"annotate application for $collectedInfo")
-    val tempFile = Files.createTempFile(null, null)
-    Files.write(tempFile, collectedInfo.file.getBytes)
-    collectedInfo.linter.lintFile(tempFile.toString)
+  override def doAnnotate(task: AnnotatorTask): Array[LinterReport] = {
+    task match {
+      case collectedInfo: Task =>
+        val application = ApplicationManager.getApplication
+        if (application != null && application.isReadAccessAllowed && !application.isUnitTestMode) return Array()
+        println(f"annotate application for $collectedInfo")
+        val tempFile = Files.createTempFile(null, null)
+        Files.write(tempFile, collectedInfo.file.getBytes)
+        collectedInfo.linter.lintFile(tempFile.toString)
+      case _ => Array()
+    }
   }
 
   def searchElementAt(file: PsiFile, line: Int): mutable.Seq[PsiElement] = {
