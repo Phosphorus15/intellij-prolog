@@ -51,6 +51,16 @@ sourceSets.main.scala.srcDirs = ['src/main/gen', 'src/main/scala']
 
 import org.jetbrains.grammarkit.tasks.*
 
+task generatePrologLexer(type: GenerateLexer) {
+    source = "src/main/lang/prolog.flex"
+
+    targetDir = "src/gen/tech/phosphorus/intellij/prolog"
+
+    targetClass = "PrologLexer"
+
+    purgeOldFiles = true
+}
+
 task generatePrologParser(type: GenerateParser) {
     // source bnf file
     source = "src/main/lang/prolog.bnf"
