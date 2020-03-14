@@ -1,13 +1,23 @@
 package tech.phosphorus.intellij.prolog.psi
 
-import com.intellij.extapi.psi.ASTWrapperPsiElement
+import com.intellij.extapi.psi.{ASTWrapperPsiElement, StubBasedPsiElementBase}
 import com.intellij.lang.ASTNode
 import com.intellij.psi.scope.PsiScopeProcessor
+import com.intellij.psi.stubs.{IStubElementType, StubElement}
 import com.intellij.psi.{PsiElement, PsiFileFactory, PsiNameIdentifierOwner, ResolveState}
 import com.intellij.util.IncorrectOperationException
 import tech.phosphorus.intellij.prolog.PrologLanguage
+import tech.phosphorus.intellij.prolog.toolchain.PrologPredicateStub
 
-abstract class PrologDeclarationMixin(node: ASTNode) extends ASTWrapperPsiElement(node) with PsiNameIdentifierOwner {
+abstract class PrologDeclarationMixin(stub: PrologPredicateStub, stubType: IStubElementType[StubElement[_], PsiElement], node: ASTNode) extends StubBasedPsiElementBase[PrologPredicateStub](stub, stubType, node) with PsiNameIdentifierOwner {
+
+  def this(stub: PrologPredicateStub, stubType: IStubElementType[StubElement[_], PsiElement]) {
+    this(stub, stubType, null)
+  }
+
+  def this(node: ASTNode) {
+    this(null, null, node)
+  }
 
   override def getName: String = getNameIdentifier.getText
 

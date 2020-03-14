@@ -64,6 +64,7 @@ common_predicate ::= ref_predicate_id parameter_list?
 
 predicate_id ::= const_id {
 implements=['com.intellij.psi.PsiNameIdentifierOwner']
+stubClass='tech.phosphorus.intellij.prolog.toolchain.PrologPredicateStub'
 mixin='tech.phosphorus.intellij.prolog.psi.PrologDeclarationMixin'
 }
 
