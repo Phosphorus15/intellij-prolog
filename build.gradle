@@ -52,9 +52,9 @@ sourceSets.main.scala.srcDirs = ['src/main/gen', 'src/main/scala']
 import org.jetbrains.grammarkit.tasks.*
 
 task generatePrologLexer(type: GenerateLexer) {
-    source = "src/main/lang/prolog.flex"
+    source = "src/main/lang/prologLexer.flex"
 
-    targetDir = "src/gen/tech/phosphorus/intellij/prolog"
+    targetDir = "src/main/gen/tech/phosphorus/intellij/prolog"
 
     targetClass = "PrologLexer"
 
