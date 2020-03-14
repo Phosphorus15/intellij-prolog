@@ -11,6 +11,7 @@
 
   elementTypeHolderClass="tech.phosphorus.intellij.prolog.psi.PrologTypes"
   elementTypeClass="tech.phosphorus.intellij.prolog.psi.PrologElementType"
+  elementTypeFactory="tech.phosphorus.intellij.prolog.psi.PrologElementType.createType"
   tokenTypeClass="tech.phosphorus.intellij.prolog.psi.PrologTokenType"
 
   psiImplUtilClass="tech.phosphorus.intellij.prolog.psi.impl.SimplePsiImplUtil"

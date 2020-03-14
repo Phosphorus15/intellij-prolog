@@ -19,6 +19,8 @@
         <lang.commenter language="Prolog" implementationClass="tech.phosphorus.intellij.prolog.MultiLineCommenter"/>
         <lang.parserDefinition language="Prolog"
                                implementationClass="tech.phosphorus.intellij.prolog.PrologParserDefinition"/>
+        <stubElementTypeHolder class="tech.phosphorus.intellij.prolog.psi.PrologTypes"/>
+        <stubIndex implementation="tech.phosphorus.intellij.prolog.toolchain.PrologPredicateStubIndex" />
         <fileType name="Prolog file" implementationClass="tech.phosphorus.intellij.prolog.psi.PrologFileType"
                   fieldName="INSTANCE" language="Prolog" extensions="pl"/>
         <lang.syntaxHighlighterFactory language="Prolog"
