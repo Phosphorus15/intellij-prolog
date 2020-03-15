@@ -13,19 +13,25 @@
     <depends>com.intellij.modules.platform</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <gotoDeclarationHandler implementation="tech.phosphorus.intellij.prolog.references.PrologGotoDeclarationHandler" />
-        <externalAnnotator language="Prolog" implementationClass="tech.phosphorus.intellij.prolog.annotator.PrologExternalAnnotator" />
+        <completion.contributor language="Prolog"
+                                implementationClass="tech.phosphorus.intellij.prolog.completion.PrologCompletionContributor"/>
+        <gotoDeclarationHandler
+                implementation="tech.phosphorus.intellij.prolog.references.PrologGotoDeclarationHandler"/>
+        <externalAnnotator language="Prolog"
+                           implementationClass="tech.phosphorus.intellij.prolog.annotator.PrologExternalAnnotator"/>
         <lang.braceMatcher language="Prolog" implementationClass="tech.phosphorus.intellij.prolog.PrologBraceMatcher"/>
         <lang.commenter language="Prolog" implementationClass="tech.phosphorus.intellij.prolog.MultiLineCommenter"/>
         <lang.parserDefinition language="Prolog"
                                implementationClass="tech.phosphorus.intellij.prolog.PrologParserDefinition"/>
         <stubElementTypeHolder class="tech.phosphorus.intellij.prolog.psi.PrologTypes"/>
-        <stubIndex implementation="tech.phosphorus.intellij.prolog.toolchain.PrologPredicateStubIndex" />
-        <runLineMarkerContributor language="Prolog" implementationClass="tech.phosphorus.intellij.prolog.project.PrologSimpleRunLineMarkerContributor" />
+        <stubIndex implementation="tech.phosphorus.intellij.prolog.toolchain.PrologPredicateStubIndex"/>
+        <runLineMarkerContributor language="Prolog"
+                                  implementationClass="tech.phosphorus.intellij.prolog.project.PrologSimpleRunLineMarkerContributor"/>
         <fileType name="Prolog file" implementationClass="tech.phosphorus.intellij.prolog.psi.PrologFileType"
                   fieldName="INSTANCE" language="Prolog" extensions="pl"/>
-        <runConfigurationProducer implementation="tech.phosphorus.intellij.prolog.project.PrologSimpleRunConfigurationProducer" />
-        <configurationType implementation="tech.phosphorus.intellij.prolog.project.PrologRunConfigurationType" />
+        <runConfigurationProducer
+                implementation="tech.phosphorus.intellij.prolog.project.PrologSimpleRunConfigurationProducer"/>
+        <configurationType implementation="tech.phosphorus.intellij.prolog.project.PrologRunConfigurationType"/>
         <lang.syntaxHighlighterFactory language="Prolog"
                                        implementationClass="tech.phosphorus.intellij.prolog.PrologSyntaxHighlighterFactory"/>
         <applicationService serviceImplementation="tech.phosphorus.intellij.prolog.settings.PrologStatePersistence"/>

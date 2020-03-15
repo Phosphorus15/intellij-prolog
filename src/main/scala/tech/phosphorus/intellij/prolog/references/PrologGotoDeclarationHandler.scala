@@ -12,7 +12,6 @@ import tech.phosphorus.intellij.prolog.toolchain.PrologPredicateStubIndex
 
 class PrologGotoDeclarationHandler extends GotoDeclarationHandler{
   override def getGotoDeclarationTargets(psiElement: PsiElement, i: Int, editor: Editor): Array[PsiElement] = {
-    StubIndex.getInstance().getAllKeys(PrologPredicateStubIndex.KEY, psiElement.getProject).toArray.foreach(println(_))
     if (psiElement.getLanguage == PrologLanguage.INSTANCE) {
       val id = psiElement.getParent
       return id match {
@@ -22,7 +21,6 @@ class PrologGotoDeclarationHandler extends GotoDeclarationHandler{
           val parameters = pid.getParent.getLastChild
           if(parameters != null && parameters.isInstanceOf[PrologParameterListMixin]) {
             val params = parameters.asInstanceOf[PrologParameterListMixin].calculateParameters()
-            println("resolved params " + params)
           }
           (pid.multiResolve(false).map(_.getElement.getParent) ++ externals.toArray[PsiElement](Array[PsiElement]()).map(_.getParent)).distinct
         case _ => Array()
