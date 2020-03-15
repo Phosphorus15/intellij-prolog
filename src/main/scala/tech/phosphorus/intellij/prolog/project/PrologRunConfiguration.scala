@@ -95,10 +95,10 @@ class PrologRunProfileState(configuration: PrologRunConfiguration, executionEnvi
 
   override def execute(executor: Executor, programRunner: ProgramRunner[_ <: RunnerSettings]): ExecutionResult = {
     var command = new GeneralCommandLine(configuration.toolchain.executablePath.toString)
+    command = command.withParameters("-t", "halt", "-q", configuration.targetFile)
     if (configuration.extraArgs != null && configuration.extraArgs.trim.nonEmpty) {
       command.addParameter(configuration.extraArgs)
     }
-    command = command.withParameters("-t", "halt", "-q", configuration.targetFile)
     val handler = new ColoredProcessHandler(command)
     ProcessTerminatedListener.attach(handler)
     val console = consoleBuilder.getConsole

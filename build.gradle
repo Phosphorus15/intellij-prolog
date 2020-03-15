@@ -48,7 +48,6 @@ dependencies {
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
-    downloadSources = true
     if (!System.getenv("CI")?.trim()) {
         localPath "G:/JetBrains/apps/IDEA-U/ch-0/193.6494.35"
         plugins ["PsiViewer"]
