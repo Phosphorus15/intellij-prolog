@@ -32,6 +32,14 @@ repositories {
     }
 }
 
+allprojects {
+    gradle.projectsEvaluated {
+        tasks.withType(ScalaCompile) {
+            scalaCompileOptions.deprecation = false
+        }
+    }
+}
+
 dependencies {
     implementation 'org.scala-lang:scala-library:2.11.12'
     testImplementation 'org.scalatest:scalatest_2.11:3.0.0'

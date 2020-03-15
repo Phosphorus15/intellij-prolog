@@ -8,5 +8,6 @@ import com.intellij.util.indexing.IndexableSetContributor
 class PrologIndexableSetContributor extends IndexableSetContributor {
   override def getAdditionalRootsToIndex: util.Set[VirtualFile] = {
     //TODO inject stdlib
+    new util.HashSet()
   }
 }
