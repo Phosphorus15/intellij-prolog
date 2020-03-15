@@ -23,6 +23,7 @@
         <stubIndex implementation="tech.phosphorus.intellij.prolog.toolchain.PrologPredicateStubIndex" />
         <fileType name="Prolog file" implementationClass="tech.phosphorus.intellij.prolog.psi.PrologFileType"
                   fieldName="INSTANCE" language="Prolog" extensions="pl"/>
+        <configurationType implementation="tech.phosphorus.intellij.prolog.project.PrologRunConfigurationType" />
         <lang.syntaxHighlighterFactory language="Prolog"
                                        implementationClass="tech.phosphorus.intellij.prolog.PrologSyntaxHighlighterFactory"/>
         <applicationService serviceImplementation="tech.phosphorus.intellij.prolog.settings.PrologStatePersistence"/>
