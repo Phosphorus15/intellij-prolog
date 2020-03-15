@@ -14,6 +14,7 @@ Prolog language support for Intellij IDEA.
     - [ ] Code completion
     - [ ] Internal analysis and linter
 - [ ] Module and project management
+    - [x] Cross file indexing
     - [ ] Standard library indexing
     - [ ] Prolog module
     - [ ] ?: External library indexing
@@ -21,6 +22,8 @@ Prolog language support for Intellij IDEA.
     - [x] Auto detection & configuration
     - [x] Basic external linter
     - [ ] Case dependent external linter
-    - [ ] Run configurations
+    - [x] Run configurations
 - [ ] Icons needed
+    - [x] File icon
+    - [ ] Plugin icon
 - [ ] Advanced: interactive query & debugging

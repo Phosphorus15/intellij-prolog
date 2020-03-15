@@ -24,7 +24,7 @@ class PrologGotoDeclarationHandler extends GotoDeclarationHandler{
             val params = parameters.asInstanceOf[PrologParameterListMixin].calculateParameters()
             println("resolved params " + params)
           }
-          (pid.multiResolve(false).map(_.getElement.getParent) ++ externals.toArray[PsiElement](Array()).map(_.getParent)).distinct
+          (pid.multiResolve(false).map(_.getElement.getParent) ++ externals.toArray[PsiElement](Array[PsiElement]()).map(_.getParent)).distinct
         case _ => Array()
       }
     }
