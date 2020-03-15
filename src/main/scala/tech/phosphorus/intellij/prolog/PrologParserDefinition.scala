@@ -3,7 +3,7 @@ package tech.phosphorus.intellij.prolog
 import com.intellij.lang.{ASTNode, ParserDefinition, PsiParser}
 import com.intellij.lexer.Lexer
 import com.intellij.openapi.project.Project
-import com.intellij.psi.tree.{IFileElementType, TokenSet}
+import com.intellij.psi.tree.{IFileElementType, IStubFileElementType, TokenSet}
 import com.intellij.psi.{FileViewProvider, PsiElement, PsiFile, TokenType}
 import tech.phosphorus.intellij.prolog.psi.{PrologParser, PrologPsiFile, PrologTypes}
 
@@ -11,7 +11,7 @@ object PrologParserDefinition {
   val WHITE_SPACES: TokenSet = TokenSet.create(TokenType.WHITE_SPACE)
   val COMMENTS: TokenSet = TokenSet.create(PrologTypes.COMMENT, PrologTypes.BLOCK_COMMENT)
 
-  val FILE = new IFileElementType(PrologLanguage.INSTANCE)
+  val FILE = new IStubFileElementType(PrologLanguage.INSTANCE)
 }
 
 class PrologParserDefinition extends ParserDefinition {

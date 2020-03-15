@@ -6,6 +6,7 @@ import java.nio.file.{Files, Path, Paths}
 import tech.phosphorus.intellij.prolog.FunctionalImplicits._
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.openapi.util.SystemInfo
+import com.intellij.openapi.vfs.{LocalFileSystem, VirtualFile}
 import org.jetbrains.annotations.Contract
 import tech.phosphorus.intellij.prolog.settings.{PrologState, PrologStatePersistence}
 
@@ -42,6 +43,11 @@ class PrologToolchain(val location: Path, var library: Path = null) {
   def stdlibPath: Path = {
     Option(library).getOrElse(location.resolve("../library").toRealPath())
   }
+
+  def loadStdlib: Option[VirtualFile] = if (validateLibrary()) {
+    val fs = LocalFileSystem.getInstance()
+    Some(fs.refreshAndFindFileByPath(""))
+  } else None
 
   def getSpec: (String, String) = {
     val format = ".* (\\d+\\.\\d+\\.\\d+) for (.*)".r
