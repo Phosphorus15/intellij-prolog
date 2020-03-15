@@ -1,10 +1,11 @@
 package tech.phosphorus.intellij.prolog.toolchain
 
+import com.intellij.icons.AllIcons.Welcome.Project
 import com.intellij.psi.PsiElement
 import com.intellij.psi.stubs._
 import tech.phosphorus.intellij.prolog.PrologLanguage
+import tech.phosphorus.intellij.prolog.psi.PrologPredicateId
 import tech.phosphorus.intellij.prolog.psi.impl.PrologPredicateIdImpl
-import tech.phosphorus.intellij.prolog.psi.{PrologDeclarationMixin, PrologPredicateId}
 
 abstract class PrologStubBase[T <: PsiElement](parent: StubElement[_], ty: PrologStubElementType[_ <: com.intellij.psi.stubs.StubElement[_ <: com.intellij.psi.PsiElement], _ <: com.intellij.psi.PsiElement])
   extends StubBase[T](parent, ty)
@@ -19,6 +20,9 @@ class PrologPredicateStubIndex extends StringStubIndexExtension[PrologPredicateI
 }
 
 object PrologPredicateStubIndex {
+
+  def getAllKeys(project: com.intellij.openapi.project.Project): Array[String] = StubIndex.getInstance().getAllKeys(PrologPredicateStubIndex.KEY, project).toArray(Array[String]())
+
   val KEY: StubIndexKey[String, PrologPredicateId] = StubIndexKey.createIndexKey("prolog.index.predicate-id")
 }
 

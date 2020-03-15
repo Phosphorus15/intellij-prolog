@@ -46,7 +46,7 @@ class PrologToolchain(val location: Path, var library: Path = null) {
 
   def loadStdlib: Option[VirtualFile] = if (validateLibrary()) {
     val fs = LocalFileSystem.getInstance()
-    Some(fs.refreshAndFindFileByPath(""))
+    Some(fs.refreshAndFindFileByPath(stdlibPath.toString))
   } else None
 
   def getSpec: (String, String) = {

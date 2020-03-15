@@ -15,8 +15,7 @@ class PrologPredicateStubCompletionProvider extends CompletionProvider[Completio
     val psi = v.getOriginalPosition
     val project = v.getEditor.getProject
     if(psi == null || project == null) return
-    StubIndex.getInstance().getAllKeys(PrologPredicateStubIndex.KEY, project)
-      .toArray(Array[String]()).filter(_.contains(psi.getText)).foreach(key => {
+    PrologPredicateStubIndex.getAllKeys(project).filter(_.contains(psi.getText)).foreach(key => {
       val elements = StubIndex.getElements(PrologPredicateStubIndex.KEY, key, project, GlobalSearchScope.allScope(project), classOf[PrologPredicateId])
       elements.toArray(Array[PsiElement]()).foreach(element => {
         val parameterList = element.getParent.getLastChild

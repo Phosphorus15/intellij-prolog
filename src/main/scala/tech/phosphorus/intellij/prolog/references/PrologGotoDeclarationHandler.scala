@@ -18,10 +18,6 @@ class PrologGotoDeclarationHandler extends GotoDeclarationHandler{
         // one step above predicate id gives its full declaration
         case pid: PrologRefPredicateIdImpl =>
           val externals = StubIndex.getElements(PrologPredicateStubIndex.KEY, pid.getText, psiElement.getProject, GlobalSearchScope.allScope(psiElement.getProject), classOf[PrologPredicateId])
-          val parameters = pid.getParent.getLastChild
-          if(parameters != null && parameters.isInstanceOf[PrologParameterListMixin]) {
-            val params = parameters.asInstanceOf[PrologParameterListMixin].calculateParameters()
-          }
           (pid.multiResolve(false).map(_.getElement.getParent) ++ externals.toArray[PsiElement](Array[PsiElement]()).map(_.getParent)).distinct
         case _ => Array()
       }

@@ -17,8 +17,7 @@ class PrologCompletionContributor extends CompletionContributor {
   {
     println("initialize completion")
     extend(CompletionType.BASIC, psiElement, new PrologSelfCompletionProvider(List(
-      LookupElementBuilder.create(":-"),
-      LookupElementBuilder.create("hello")
+      LookupElementBuilder.create(":-")
     )))
     extend(CompletionType.BASIC
       , psiElement
