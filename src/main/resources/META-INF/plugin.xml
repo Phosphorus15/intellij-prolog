@@ -21,8 +21,10 @@
                                implementationClass="tech.phosphorus.intellij.prolog.PrologParserDefinition"/>
         <stubElementTypeHolder class="tech.phosphorus.intellij.prolog.psi.PrologTypes"/>
         <stubIndex implementation="tech.phosphorus.intellij.prolog.toolchain.PrologPredicateStubIndex" />
+        <runLineMarkerContributor language="Prolog" implementationClass="tech.phosphorus.intellij.prolog.project.PrologSimpleRunLineMarkerContributor" />
         <fileType name="Prolog file" implementationClass="tech.phosphorus.intellij.prolog.psi.PrologFileType"
                   fieldName="INSTANCE" language="Prolog" extensions="pl"/>
+        <runConfigurationProducer implementation="tech.phosphorus.intellij.prolog.project.PrologSimpleRunConfigurationProducer" />
         <configurationType implementation="tech.phosphorus.intellij.prolog.project.PrologRunConfigurationType" />
         <lang.syntaxHighlighterFactory language="Prolog"
                                        implementationClass="tech.phosphorus.intellij.prolog.PrologSyntaxHighlighterFactory"/>

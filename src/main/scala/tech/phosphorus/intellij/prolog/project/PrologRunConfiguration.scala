@@ -28,10 +28,12 @@ class PrologRunConfigurationSettingsEditor(configuration: PrologRunConfiguration
 
   override def resetEditorFrom(settings: PrologRunConfiguration): Unit = {
     targetRunFile.setText(settings.targetFile)
+    extraArgs.setToolTipText(settings.extraArgs)
   }
 
   override def applyEditorTo(settings: PrologRunConfiguration): Unit = {
     settings.targetFile = targetRunFile.getText
+    settings.extraArgs = extraArgs.getText
   }
 
   override def createEditor(): JComponent = rootPanel
@@ -40,12 +42,15 @@ class PrologRunConfigurationSettingsEditor(configuration: PrologRunConfiguration
 class PrologRunConfiguration(val project: Project, factory: ConfigurationFactory) extends LocatableConfigurationBase[PrologRunProfileState](project, factory) {
   var targetFile = ""
 
+  var extraArgs = ""
+
   lazy val toolchain = new PrologToolchain(Paths.get(PrologToolchain.instanceToolchain()))
 
   @SuppressWarnings(Array("deprecated"))
   override def writeExternal(element: Element): Unit = {
     super.writeExternal(element)
     JDOMExternalizer.write(element, "targetFile", targetFile)
+    JDOMExternalizer.write(element, "extraArgs", extraArgs)
     PathMacroManager.getInstance(project).collapsePathsRecursively(element)
   }
 
@@ -55,6 +60,8 @@ class PrologRunConfiguration(val project: Project, factory: ConfigurationFactory
     PathMacroManager.getInstance(project).expandPaths(element)
     val file = JDOMExternalizer.readString(element, "targetFile")
     if (file != null) targetFile = file
+    val args = JDOMExternalizer.readString(element, "extraArgs")
+    if (args != null) extraArgs = args
   }
 
   override def getConfigurationEditor: SettingsEditor[_ <: RunConfiguration] = new PrologRunConfigurationSettingsEditor(this, project)
@@ -87,7 +94,12 @@ class PrologRunProfileState(configuration: PrologRunConfiguration, executionEnvi
     .createBuilder(configuration.project, GlobalSearchScope.allScope(configuration.project))
 
   override def execute(executor: Executor, programRunner: ProgramRunner[_ <: RunnerSettings]): ExecutionResult = {
-    val handler = new ColoredProcessHandler(new GeneralCommandLine(configuration.toolchain.executablePath.toString).withParameters("-t", "halt", "-q", configuration.targetFile))
+    var command = new GeneralCommandLine(configuration.toolchain.executablePath.toString)
+    if (configuration.extraArgs != null && configuration.extraArgs.trim.nonEmpty) {
+      command.addParameter(configuration.extraArgs)
+    }
+    command = command.withParameters("-t", "halt", "-q", configuration.targetFile)
+    val handler = new ColoredProcessHandler(command)
     ProcessTerminatedListener.attach(handler)
     val console = consoleBuilder.getConsole
     console.attachToProcess(handler)

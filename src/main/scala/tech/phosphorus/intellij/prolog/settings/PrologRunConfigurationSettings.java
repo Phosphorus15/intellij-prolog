@@ -9,4 +9,5 @@ import javax.swing.*;
 public abstract class PrologRunConfigurationSettings extends SettingsEditor<PrologRunConfiguration> {
     protected TextFieldWithBrowseButton targetRunFile;
     protected JPanel rootPanel;
+    public JTextField extraArgs;
 }
