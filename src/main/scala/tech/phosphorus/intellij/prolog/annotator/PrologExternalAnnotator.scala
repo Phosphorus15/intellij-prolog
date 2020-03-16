@@ -15,7 +15,7 @@ import scala.collection.mutable
 
 class AnnotatorTask
 
-case class Task(file: String, linter: SwiPrologLinter) extends AnnotatorTask
+case class Task(file: String, workdir: String, linter: SwiPrologLinter) extends AnnotatorTask
 
 case class Abort() extends AnnotatorTask
 
@@ -28,7 +28,7 @@ class PrologExternalAnnotator extends ExternalAnnotator[AnnotatorTask, Array[Lin
       new SingletonNotificationManager(NotificationGroup.balloonGroup("Prolog Toolchain Not Found"), NotificationType.WARNING, null)
         .notify("Prolog toolchain not detected", "configure a valid toolchain to enable external code linter", file.getProject, null, new PrologShowSettingsAction)
       Abort()
-    } else Task(file.getText, new SwiPrologLinter(toolchain))
+    } else Task(file.getText, file.getVirtualFile.getParent.getPath, new SwiPrologLinter(toolchain))
   }
 
   override def doAnnotate(task: AnnotatorTask): Array[LinterReport] = {
@@ -38,7 +38,7 @@ class PrologExternalAnnotator extends ExternalAnnotator[AnnotatorTask, Array[Lin
         if (application != null && application.isReadAccessAllowed && !application.isUnitTestMode) return Array()
         val tempFile = Files.createTempFile(null, null)
         Files.write(tempFile, collectedInfo.file.getBytes)
-        collectedInfo.linter.lintFile(tempFile.toString)
+        collectedInfo.linter.lintFile(tempFile.toString, collectedInfo.workdir)
           .filterNot(_.message.contains("Singleton variables")) // this one is slipped to internal annotator
       case _ => Array()
     }
