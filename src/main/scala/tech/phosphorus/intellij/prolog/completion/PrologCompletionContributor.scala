@@ -15,9 +15,8 @@ class PrologSelfCompletionProvider(val list: List[LookupElement]) extends Comple
 
 class PrologCompletionContributor extends CompletionContributor {
   {
-    extend(CompletionType.BASIC, psiElement, new PrologSelfCompletionProvider(List(
-      LookupElementBuilder.create(":-"),
-      LookupElementBuilder.create("is")
+    extend(CompletionType.BASIC, psiElement.inside(psiElement(PrologTypes.EQUIV_BINARY)), new PrologSelfCompletionProvider(List(
+      LookupElementBuilder.create("is").withTypeText("Arithmetic evaluation")
     )))
     extend(CompletionType.BASIC
       , psiElement

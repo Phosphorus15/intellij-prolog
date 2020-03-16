@@ -9,6 +9,8 @@ import com.intellij.psi.impl.source.resolve.ResolveCache.PolyVariantResolver
 import com.intellij.psi.scope.PsiScopeProcessor
 import com.intellij.util.IncorrectOperationException
 import tech.phosphorus.intellij.prolog.PrologLanguage
+import tech.phosphorus.intellij.prolog.inspector.SingletonAnalysis
+import tech.phosphorus.intellij.prolog.SingletonObject._
 
 import scala.collection.mutable
 
@@ -21,8 +23,13 @@ abstract class PrologAtomReferenceMixin(node: ASTNode) extends PrologReferenceMi
     if (!isValid || getProject.isDisposed) return ResolveResult.EMPTY_ARRAY
     ResolveCache.getInstance(getProject).resolveWithCaching(
       this, new PolyVariantResolver[PrologReferenceMixin] {
-        override def resolve(t: PrologReferenceMixin, b: Boolean): Array[ResolveResult] =
-          ReferenceResolution.resolveWith(new NameIdentifierResolveProcessor(t.getCanonicalText), t)
+        override def resolve(t: PrologReferenceMixin, b: Boolean): Array[ResolveResult] = {
+          val toplevel = PrologPsiUtil
+            .findParentWith(t, element =>
+              element.isInstanceOf[PrologToplevelExpr]
+                || element.isInstanceOf[PrologTrailingExpr])
+          SingletonAnalysis.findAllLocalAtom(toplevel.get, t.getCanonicalText).map(new PsiElementResolveResult(_, true))
+        }
       }, true, b, file
     )
   }

@@ -98,5 +98,5 @@ private common_val_or_paren ::= common_val | '(' common_val ')' | '{' common_val
 private primary ::= (common_val_or_paren | logical_not | operator_id) (common_val_or_paren | equiv_binary | logical_or  | operator_id)*
 
 ident ::= (const_id | atom_id) {
-mixin='tech.phosphorus.intellij.prolog.psi.PrologReferenceMixin'
+mixin='tech.phosphorus.intellij.prolog.psi.PrologAtomReferenceMixin'
 }

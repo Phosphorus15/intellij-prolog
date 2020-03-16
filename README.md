@@ -7,10 +7,9 @@ Prolog language support for Intellij IDEA.
 - [ ] Basic language features
     - [x] Simple code highlighting
     - [x] Language file detection
-    - [ ] References and declarations linking
+    - [x] References and declarations linking
         - [x] Function(facts) references
-        - [ ] Atom(variable) and constants reference
-        - [ ] Something more...
+        - [x] Atom(variable) references
     - [x] Code completion
         - [x] Function(facts) references
         - [x] Atom local references
@@ -27,4 +26,5 @@ Prolog language support for Intellij IDEA.
 - [ ] Icons needed
     - [x] File icon
     - [ ] Plugin icon
+- [ ] Pattern unification
 - [ ] Advanced: interactive query & debugging
