@@ -26,6 +26,7 @@
         <!-- Declaration handler -->
         <gotoDeclarationHandler
                 implementation="tech.phosphorus.intellij.prolog.references.PrologGotoDeclarationHandler"/>
+        <gotoSymbolContributor implementation="tech.phosphorus.intellij.prolog.references.PrologGotoPredicateContributor"/>
 
         <!-- Editor related -->
         <lang.braceMatcher language="Prolog" implementationClass="tech.phosphorus.intellij.prolog.PrologBraceMatcher"/>

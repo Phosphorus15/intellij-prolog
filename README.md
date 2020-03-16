@@ -14,6 +14,7 @@ Prolog language support for Intellij IDEA.
     - [x] Code completion
         - [x] Function(facts) references
         - [x] Atom local references
+    - [x] Goto symbol contributor
     - [ ] Internal analysis and linter
 - [ ] Module and project management
     - [x] Cross file indexing

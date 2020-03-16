@@ -2,14 +2,16 @@ package tech.phosphorus.intellij.prolog.psi
 
 import com.intellij.extapi.psi.{ASTWrapperPsiElement, StubBasedPsiElementBase}
 import com.intellij.lang.ASTNode
+import com.intellij.navigation.{ItemPresentation, NavigationItem}
 import com.intellij.psi.scope.PsiScopeProcessor
 import com.intellij.psi.stubs.{IStubElementType, StubElement}
 import com.intellij.psi.{PsiElement, PsiFileFactory, PsiNameIdentifierOwner, ResolveState}
 import com.intellij.util.IncorrectOperationException
+import javax.swing.Icon
 import tech.phosphorus.intellij.prolog.PrologLanguage
 import tech.phosphorus.intellij.prolog.toolchain.PrologPredicateStub
 
-abstract class PrologDeclarationMixin(stub: PrologPredicateStub, stubType: IStubElementType[StubElement[_], PsiElement], node: ASTNode) extends StubBasedPsiElementBase[PrologPredicateStub](stub, stubType, node) with PsiNameIdentifierOwner {
+abstract class PrologDeclarationMixin(stub: PrologPredicateStub, stubType: IStubElementType[StubElement[_], PsiElement], node: ASTNode) extends StubBasedPsiElementBase[PrologPredicateStub](stub, stubType, node) with PsiNameIdentifierOwner with NavigationItem{
 
   def this(stub: PrologPredicateStub, stubType: IStubElementType[StubElement[_], PsiElement]) {
     this(stub, stubType, null)
@@ -33,6 +35,16 @@ abstract class PrologDeclarationMixin(stub: PrologPredicateStub, stubType: IStub
     val name = getNameIdentifier
     if(element != null && name != null) name.replace(element)
     else throw new IncorrectOperationException("Rename failed")
+  }
+
+  override def getPresentation: ItemPresentation = {
+    new ItemPresentation {
+      override def getPresentableText: String = getName
+
+      override def getLocationString: String = getContainingFile.getVirtualFile.toString
+
+      override def getIcon(b: Boolean): Icon = null
+    }
   }
 
 }

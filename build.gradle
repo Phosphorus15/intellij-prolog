@@ -50,8 +50,9 @@ dependencies {
 // create your own .ijlocation if any alternatives should be suggested
 static def findIntellijPath() {
     try {
-        if (Files.exists(Paths.get("./.ijlocation"))) {
-            return Files.readString(Paths.get("./.ijlocation")).strip()
+        def workdir = System.getProperty("user.dir")
+        if (workdir != null && Files.exists(Paths.get(workdir).resolve(".ijlocation"))) {
+            Files.readAllLines(Paths.get(workdir).resolve(".ijlocation"))[0].trim()
         } else {
             def user = System.getProperty("user.name")
             def apps = System.getProperty("os.name").startsWith("Windows")
@@ -64,6 +65,7 @@ static def findIntellijPath() {
                     .sorted({ a, b -> b.fileName <=> a.fileName }).findFirst().orElseGet({ _ -> null })
         }
     } catch (Exception ignored) { // this is so java, I dont like it :(
+        ignored.printStackTrace()
         return null
     }
 }
