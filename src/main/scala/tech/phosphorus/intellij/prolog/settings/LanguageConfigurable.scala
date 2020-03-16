@@ -7,6 +7,7 @@ import tech.phosphorus.intellij.prolog.RunnableImplicits._
 import com.intellij.openapi.application.{ApplicationManager, ModalityState}
 import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.options.SearchableConfigurable
+import com.intellij.openapi.progress.{ProgressIndicator, ProgressManager, Task}
 import com.intellij.openapi.ui.TextComponentAccessor
 import com.intellij.openapi.util.Disposer
 import com.intellij.ui.{DocumentAdapter, JBColor}
@@ -15,11 +16,9 @@ import javax.swing.JComponent
 import javax.swing.event.DocumentEvent
 import tech.phosphorus.intellij.prolog.toolchain.PrologToolchain
 
-class LanguageConfigurable extends SearchableConfigurable with Disposable {
+class LanguageConfigurable extends SearchableConfigurable {
 
   val configurableGUI = new PrologLanguageConfigurableGUI
-
-  val alarm = new Alarm(Alarm.ThreadToUse.POOLED_THREAD, this)
 
   override def getDisplayName: String = "Prolog"
 
@@ -27,7 +26,6 @@ class LanguageConfigurable extends SearchableConfigurable with Disposable {
   override def createComponent(): JComponent = {
     val location: String = PrologToolchain.instanceToolchain()
     val library: String = PrologToolchain.instanceLibrary(location)
-//    println(library)
     configurableGUI.toolchainLocation.setText(location)
     configurableGUI.stdlibLocation.setText(library)
     configurableGUI.toolchainLocation
@@ -46,25 +44,24 @@ class LanguageConfigurable extends SearchableConfigurable with Disposable {
   }
 
   def refreshToolchainInfo(): Unit = {
-    alarm.cancelAllRequests()
-    alarm.addRequest(() => {
-      if (Disposer.isDisposed(this)) return
-      val toolchain = new PrologToolchain(Paths.get(configurableGUI.toolchainLocation.getText))
-      val application = ApplicationManager.getApplication
-      if (toolchain.validate()) {
-        val descriptor = toolchain.toString
-        if (Disposer.isDisposed(this)) return
-        application.invokeLater(() => {
-          configurableGUI.toolchainStatus.setText(descriptor)
-          configurableGUI.toolchainStatus.setForeground(JBColor.foreground())
-        }, ModalityState.any())
-      } else {
-        application.invokeLater(() => {
-          configurableGUI.toolchainStatus.setText("N/A")
-          configurableGUI.toolchainStatus.setForeground(JBColor.RED)
-        }, ModalityState.any())
+    ProgressManager.getInstance().run(new Task.Backgroundable(null, "Updating toolchain version") {
+      override def run(progressIndicator: ProgressIndicator): Unit = {
+        val toolchain = new PrologToolchain(Paths.get(configurableGUI.toolchainLocation.getText))
+        val application = ApplicationManager.getApplication
+        if (toolchain.validate()) {
+          val descriptor = toolchain.toString
+          application.invokeLater(() => {
+            configurableGUI.toolchainStatus.setText(descriptor)
+            configurableGUI.toolchainStatus.setForeground(JBColor.foreground())
+          }, ModalityState.any())
+        } else {
+          application.invokeLater(() => {
+            configurableGUI.toolchainStatus.setText("N/A")
+            configurableGUI.toolchainStatus.setForeground(JBColor.RED)
+          }, ModalityState.any())
+        }
       }
-    }, 200)
+    })
   }
 
   override def apply(): Unit = {
@@ -77,6 +74,4 @@ class LanguageConfigurable extends SearchableConfigurable with Disposable {
     val state = PrologStatePersistence.getInstance().getState
     state.stdLibrary != configurableGUI.stdlibLocation.getText || state.toolchain != configurableGUI.toolchainLocation.getText
   }
-
-  override def dispose(): Unit = {}
 }

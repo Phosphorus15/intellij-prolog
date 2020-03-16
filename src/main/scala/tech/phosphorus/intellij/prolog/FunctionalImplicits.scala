@@ -3,6 +3,8 @@ package tech.phosphorus.intellij.prolog
 import com.intellij.execution.ExecutionException
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.process.{CapturingProcessHandler, ProcessOutput}
+import com.intellij.openapi.progress.ProgressIndicator
+import com.intellij.openapi.progress.Task.Backgroundable
 
 import scala.reflect.ClassTag
 

@@ -33,7 +33,6 @@ class SwiPrologLinter(val toolchain: PrologToolchain) {
         .captureOutput()
       SwiPrologLinter.locationPattern.findAllMatchIn(ttyOut.getStderr)
           .map({ v =>
-            println(v)
             val list = v.subgroups
             new LinterReport(list.head match {
               case "ERROR" => new Error
