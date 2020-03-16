@@ -60,5 +60,8 @@
     </extensions>
     <actions>
         <!-- Add your actions here -->
+        <action id="Prolog.ShowSettings"
+                text="Goto Settings"
+                class="tech.phosphorus.intellij.prolog.settings.PrologShowSettingsAction"/>
     </actions>
 </idea-plugin>

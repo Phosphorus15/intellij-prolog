@@ -4,7 +4,7 @@ import com.intellij.psi.PsiElement
 
 object PrologPsiUtil {
 
-  def findParentWith(element: PsiElement, pred: (PsiElement) => Boolean): Option[PsiElement] = {
+  def findParentWith(element: PsiElement, pred: PsiElement => Boolean): Option[PsiElement] = {
     var current = element
     while (current != null) {
       current = current.getParent

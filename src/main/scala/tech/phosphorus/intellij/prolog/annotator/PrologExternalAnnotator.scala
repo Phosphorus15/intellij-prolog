@@ -8,13 +8,14 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.psi.{PsiDocumentManager, PsiElement, PsiFile}
 import tech.phosphorus.intellij.prolog.inspector.{Error, LinterReport, SwiPrologLinter}
 import tech.phosphorus.intellij.prolog.psi._
+import tech.phosphorus.intellij.prolog.settings.PrologShowSettingsAction
 import tech.phosphorus.intellij.prolog.toolchain.PrologToolchain
 
 import scala.collection.mutable
 
 class AnnotatorTask
 
-case class Task(val file: String, val linter: SwiPrologLinter) extends AnnotatorTask
+case class Task(file: String, linter: SwiPrologLinter) extends AnnotatorTask
 
 case class Abort() extends AnnotatorTask
 
@@ -23,11 +24,9 @@ class PrologExternalAnnotator extends ExternalAnnotator[AnnotatorTask, Array[Lin
   lazy val toolchain = new PrologToolchain(Paths.get(PrologToolchain.instanceToolchain()))
 
   override def collectInformation(file: PsiFile): AnnotatorTask = {
-//    println(f"annotate request for ${file.getVirtualFile.getCanonicalPath}")
     if (!toolchain.validate()) {
       new SingletonNotificationManager(NotificationGroup.balloonGroup("Prolog Toolchain Not Found"), NotificationType.WARNING, null)
-        .notify("Prolog toolchain not detected", "configure a valid toolchain to enable code linter")
-      // TODO alert to configuration page
+        .notify("Prolog toolchain not detected", "configure a valid toolchain to enable external code linter", file.getProject, null, new PrologShowSettingsAction)
       Abort()
     } else Task(file.getText, new SwiPrologLinter(toolchain))
   }
@@ -37,7 +36,6 @@ class PrologExternalAnnotator extends ExternalAnnotator[AnnotatorTask, Array[Lin
       case collectedInfo: Task =>
         val application = ApplicationManager.getApplication
         if (application != null && application.isReadAccessAllowed && !application.isUnitTestMode) return Array()
-//        println(f"annotate application for $collectedInfo")
         val tempFile = Files.createTempFile(null, null)
         Files.write(tempFile, collectedInfo.file.getBytes)
         collectedInfo.linter.lintFile(tempFile.toString)

@@ -16,6 +16,7 @@ sealed class LinterReport(val ty: ReportType, val line: Int, val location: Optio
 
 object SwiPrologLinter {
 
+  // FIXME Multi-line problem
   final val locationPattern: Regex = "(Warning|ERROR):\\s+.+?:(\\d+?):((\\d+?):)?\\s+(.*)".r
 
 }
@@ -32,6 +33,7 @@ class SwiPrologLinter(val toolchain: PrologToolchain) {
         .captureOutput()
       SwiPrologLinter.locationPattern.findAllMatchIn(ttyOut.getStderr)
           .map({ v =>
+            println(v)
             val list = v.subgroups
             new LinterReport(list.head match {
               case "ERROR" => new Error
