@@ -46,11 +46,30 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 
+
+// create your own .ijlocation if any alternatives should be suggested
+static def findIntellijPath() {
+    if (Files.exists(Paths.get("./.ijlocation"))) {
+        return Files.readString(Paths.get("./.ijlocation")).strip()
+    } else {
+        def user = System.getProperty("user.name")
+        def apps = System.getProperty("os.name").startsWith("Windows")
+                ? "C:\\Users\\$user\\AppData\\Local\\JetBrains\\Toolbox\\apps"
+                : "/home/$user/.local/share/JetBrains/Toolbox/apps"
+        return Files.list(Paths.get(apps))
+                .filter({ _ -> _.getFileName().startsWith("IDEA-C") || _.getFileName().startsWith("IDEA-U") })
+                .map({ _ -> _.resolve("ch-0") }).filter({ f -> f != null && Files.isDirectory(f) })
+                .flatMap({ f -> Files.list(f) }).filter({ _ -> _.fileName.toString().matches("\\d+\\.\\d+\\.\\d+") })
+                .sorted({ a, b -> b.fileName <=> a.fileName }).findFirst().orElseGet({ _ -> null })
+    }
+}
+
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
-    if (!System.getenv("CI")?.trim()) {
-        localPath "C:/Users/Phosphorus15/AppData/Local/JetBrains/Toolbox/apps/IDEA-U/ch-0/193.6494.35"
-        plugins ["PsiViewer"]
+    def localDist = findIntellijPath()
+    if (!System.getenv("CI")?.trim() && localDist != null) {
+        localPath localDist.toString()
+        plugins["PsiViewer"]
     } else {
         version "IU-2019.3.3"
     }
@@ -59,6 +78,9 @@ intellij {
 sourceSets.main.scala.srcDirs = ['src/main/gen', 'src/main/scala']
 
 import org.jetbrains.grammarkit.tasks.*
+
+import java.nio.file.Files
+import java.nio.file.Paths
 
 task generatePrologLexer(type: GenerateLexer) {
     source = "src/main/lang/prologLexer.flex"
