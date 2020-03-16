@@ -49,18 +49,22 @@ dependencies {
 
 // create your own .ijlocation if any alternatives should be suggested
 static def findIntellijPath() {
-    if (Files.exists(Paths.get("./.ijlocation"))) {
-        return Files.readString(Paths.get("./.ijlocation")).strip()
-    } else {
-        def user = System.getProperty("user.name")
-        def apps = System.getProperty("os.name").startsWith("Windows")
-                ? "C:\\Users\\$user\\AppData\\Local\\JetBrains\\Toolbox\\apps"
-                : "/home/$user/.local/share/JetBrains/Toolbox/apps"
-        return Files.list(Paths.get(apps))
-                .filter({ _ -> _.getFileName().startsWith("IDEA-C") || _.getFileName().startsWith("IDEA-U") })
-                .map({ _ -> _.resolve("ch-0") }).filter({ f -> f != null && Files.isDirectory(f) })
-                .flatMap({ f -> Files.list(f) }).filter({ _ -> _.fileName.toString().matches("\\d+\\.\\d+\\.\\d+") })
-                .sorted({ a, b -> b.fileName <=> a.fileName }).findFirst().orElseGet({ _ -> null })
+    try {
+        if (Files.exists(Paths.get("./.ijlocation"))) {
+            return Files.readString(Paths.get("./.ijlocation")).strip()
+        } else {
+            def user = System.getProperty("user.name")
+            def apps = System.getProperty("os.name").startsWith("Windows")
+                    ? "C:\\Users\\$user\\AppData\\Local\\JetBrains\\Toolbox\\apps"
+                    : "/home/$user/.local/share/JetBrains/Toolbox/apps"
+            return Files.list(Paths.get(apps))
+                    .filter({ _ -> _.getFileName().startsWith("IDEA-C") || _.getFileName().startsWith("IDEA-U") })
+                    .map({ _ -> _.resolve("ch-0") }).filter({ f -> f != null && Files.isDirectory(f) })
+                    .flatMap({ f -> Files.list(f) }).filter({ _ -> _.fileName.toString().matches("\\d+\\.\\d+\\.\\d+") })
+                    .sorted({ a, b -> b.fileName <=> a.fileName }).findFirst().orElseGet({ _ -> null })
+        }
+    } catch (Exception ignored) { // this is so java, I dont like it :(
+        return null
     }
 }
 
