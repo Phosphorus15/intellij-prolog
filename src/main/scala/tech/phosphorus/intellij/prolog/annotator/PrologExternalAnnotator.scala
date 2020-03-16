@@ -41,6 +41,7 @@ class PrologExternalAnnotator extends ExternalAnnotator[AnnotatorTask, Array[Lin
         val tempFile = Files.createTempFile(null, null)
         Files.write(tempFile, collectedInfo.file.getBytes)
         collectedInfo.linter.lintFile(tempFile.toString)
+          .filterNot(_.message.contains("Singleton variables")) // this one is slipped to internal annotator
       case _ => Array()
     }
   }
