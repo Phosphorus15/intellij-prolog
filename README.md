@@ -1,5 +1,6 @@
 Intellij Prolog
 ---
+[![CI](https://github.com/Phosphorus15/intellij-prolog/workflows/CI/badge.svg)](https://github.com/Phosphorus15/intellij-prolog/actions)
 
 Prolog language support for Intellij IDEA.
 
