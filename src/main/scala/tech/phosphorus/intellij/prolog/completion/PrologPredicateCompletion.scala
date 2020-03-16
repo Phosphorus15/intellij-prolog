@@ -19,7 +19,7 @@ class PrologPredicateStubCompletionProvider extends CompletionProvider[Completio
       val elements = StubIndex.getElements(PrologPredicateStubIndex.KEY, key, project, GlobalSearchScope.allScope(project), classOf[PrologPredicateId])
       elements.toArray(Array[PsiElement]()).foreach(element => {
         val parameterList = element.getParent.getLastChild
-        println(parameterList.getClass)
+//        println(parameterList.getClass)
         val parameters = parameterList match {
           case mixin: PrologParameterListMixin =>
             "/" + mixin.calculateParameters()

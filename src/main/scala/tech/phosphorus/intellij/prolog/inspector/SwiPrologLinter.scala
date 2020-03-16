@@ -28,7 +28,7 @@ class SwiPrologLinter(val toolchain: PrologToolchain) {
 
   def lintFile(path: String, workdir: String = null): Array[LinterReport] = {
     if (canLint) {
-      println(workdir)
+//      println(workdir)
       val ttyOut = new GeneralCommandLine(toolchain.executablePath.toString)
         .withWorkDirectory(workdir)
         .withParameters("-g", "halt", "-l", path)
