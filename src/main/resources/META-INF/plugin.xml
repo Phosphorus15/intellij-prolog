@@ -4,8 +4,14 @@
     <vendor email="phosphophate@gmail.com" url="https://github.com/Phosphorus15">Phosphorus15</vendor>
 
     <description><![CDATA[
-    Prolog language support.<br>
-    currently works under SWI toolchain
+    Supports for Prolog language, currently works under SWI-Prolog<br>
+    <a href="https://github.com/Phosphorus15/intellij-prolog">Github repository</a>
+
+    <h1>Copyrights</h1>
+    <ul>
+        <li>Thanks to ice1000's contribution and his awesome icons !</li>
+        <li>This plugin icon is retrieved from public domain</li>
+    </ul>
     ]]></description>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html

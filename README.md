@@ -25,8 +25,6 @@ Prolog language support for Intellij IDEA.
     - [x] Basic external linter
     - [ ] Case dependent external linter
     - [x] Run configurations
-- [ ] Icons needed
-    - [x] File icon
-    - [ ] Plugin icon
+- [x] Icons needed
 - [ ] Pattern unification
 - [ ] Advanced: interactive query & debugging
