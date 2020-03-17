@@ -1,6 +1,12 @@
 Intellij Prolog
 ---
 [![CI](https://github.com/Phosphorus15/intellij-prolog/workflows/CI/badge.svg)](https://github.com/Phosphorus15/intellij-prolog/actions)
+[![][d-svg]][jb-url]
+[![][v-svg]][jb-url]
+
+ [d-svg]: https://img.shields.io/jetbrains/plugin/d/13954.svg
+ [v-svg]: https://img.shields.io/jetbrains/plugin/v/13954.svg
+ [jb-url]: https://plugins.jetbrains.com/plugin/13954
 
 Prolog language support for Intellij IDEA.
 
