@@ -40,4 +40,4 @@ jobs:
       uses: eskatos/gradle-command-action@v1
       with:
     # Gradle command line arguments, see gradle --help
-        arguments: assemble buildSearchableOptions # try assemble the plugin jar
+        arguments: assemble test buildSearchableOptions # try assemble the plugin jar
