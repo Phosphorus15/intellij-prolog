@@ -30,6 +30,8 @@ jobs:
             - v1-dependencies-{{ checksum "build.gradle" }}
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
+      # generate static files
+      - run: gradle generatePrologParser generatePrologLexer
 
       - run: gradle dependencies
 
