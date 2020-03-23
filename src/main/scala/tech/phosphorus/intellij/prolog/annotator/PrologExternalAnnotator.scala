@@ -19,14 +19,20 @@ case class Task(file: String, workdir: String, linter: SwiPrologLinter) extends 
 
 case class Abort() extends AnnotatorTask
 
+object GlobalSwiAlertLock {
+  var alertAlready = false
+}
+
 class PrologExternalAnnotator extends ExternalAnnotator[AnnotatorTask, Array[LinterReport]] {
 
   lazy val toolchain = new PrologToolchain(Paths.get(PrologToolchain.instanceToolchain()))
 
   override def collectInformation(file: PsiFile): AnnotatorTask = {
     if (!toolchain.validate()) {
-      new SingletonNotificationManager(NotificationGroup.balloonGroup("Prolog Toolchain Not Found"), NotificationType.WARNING, null)
-        .notify("Prolog toolchain not detected", "configure a valid toolchain to enable external code linter", file.getProject, null, new PrologShowSettingsAction)
+      if (!GlobalSwiAlertLock.alertAlready)
+        new SingletonNotificationManager(NotificationGroup.balloonGroup("Prolog Toolchain Not Found"), NotificationType.WARNING, null)
+          .notify("Prolog toolchain not detected", "configure a valid toolchain to enable external code linter", file.getProject, null, new PrologShowSettingsAction)
+      GlobalSwiAlertLock.alertAlready = true
       Abort()
     } else Task(file.getText, file.getVirtualFile.getParent.getPath, new SwiPrologLinter(toolchain))
   }
@@ -59,7 +65,7 @@ class PrologExternalAnnotator extends ExternalAnnotator[AnnotatorTask, Array[Lin
 
   def applyAnnotation(file: PsiFile, linterReport: LinterReport, holder: AnnotationHolder): Annotation = {
     // always need this for candidate selection
-//    println(s"${linterReport.location} ${linterReport.line} ${linterReport.message}")
+    //    println(s"${linterReport.location} ${linterReport.line} ${linterReport.message}")
     val document = PsiDocumentManager.getInstance(file.getProject).getDocument(file)
     val candidates = searchElementAt(file, linterReport.line - 1)
     val element = if (linterReport.location.isEmpty) {
