@@ -77,7 +77,7 @@ intellij {
         localPath localDist.toString()
         plugins["PsiViewer"]
     } else {
-        version "IU-2019.3.3"
+        version "IU-2019.3.4"
     }
 }
 
