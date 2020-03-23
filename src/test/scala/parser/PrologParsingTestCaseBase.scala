@@ -16,5 +16,5 @@ class PrologParsingTestCaseBase extends ParsingTestCase("", "pl", new PrologPars
 
   override def includeRanges(): Boolean = true
 
-  override def skipSpaces(): Boolean = false
+  override def skipSpaces(): Boolean = true
 }

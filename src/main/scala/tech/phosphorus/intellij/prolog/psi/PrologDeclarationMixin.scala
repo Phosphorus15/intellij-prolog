@@ -23,6 +23,8 @@ abstract class PrologDeclarationMixin(stub: PrologPredicateStub, stubType: IStub
 
   override def getName: String = getNameIdentifier.getText
 
+  override def toString: String = this.getClass.getSimpleName + "(" + this.node.getElementType.toString + ")"
+
   override def processDeclarations(processor: PsiScopeProcessor, state: ResolveState, lastParent: PsiElement, place: PsiElement): Boolean =
     getNameIdentifier == null || processor.execute(getNameIdentifier, state)
 
