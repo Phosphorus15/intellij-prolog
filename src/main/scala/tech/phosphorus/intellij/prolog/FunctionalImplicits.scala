@@ -22,7 +22,7 @@ object FunctionalImplicits {
     }
   }
 
-  implicit class Nullable[T <: Null](val t: T) {
+  implicit class Nullable[T](val t: T) extends AnyVal {
     def asOption(): Option[T] = Option(t)
     def isDefined: Boolean = t != null
     def isNull: Boolean = !isDefined
@@ -62,7 +62,7 @@ object FunctionalImplicits {
 
     override def <*>[B](f: Array[T => B])(implicit classTag: ClassTag[B]): Array[B] = t.flatMap(v => f.map(_(v))).toArray
 
-    override def <@>[B](f: T => B)(implicit classTag: ClassTag[B]): Array[B] = t.map(f).toArray
+    override def <@>[B](f: T => B)(implicit classTag: ClassTag[B]): Array[B] = t.map(f)
   }
 
 }
