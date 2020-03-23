@@ -65,7 +65,7 @@ static def findIntellijPath() {
                     .sorted({ a, b -> b.fileName <=> a.fileName }).findFirst().orElseGet({ _ -> null })
         }
     } catch (Exception ignored) { // this is so java, I dont like it :(
-        ignored.printStackTrace()
+        ignored.printStackTrace(System.out)
         return null
     }
 }
