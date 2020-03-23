@@ -58,6 +58,7 @@ static def findIntellijPath() {
             def apps = System.getProperty("os.name").startsWith("Windows")
                     ? "C:\\Users\\$user\\AppData\\Local\\JetBrains\\Toolbox\\apps"
                     : "/home/$user/.local/share/JetBrains/Toolbox/apps"
+            if (!Files.exists(Paths.get(apps))) return null
             return Files.list(Paths.get(apps))
                     .filter({ _ -> _.getFileName().startsWith("IDEA-C") || _.getFileName().startsWith("IDEA-U") })
                     .map({ _ -> _.resolve("ch-0") }).filter({ f -> f != null && Files.isDirectory(f) })
