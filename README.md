@@ -1,6 +1,7 @@
 Intellij Prolog
 ---
 [![CI](https://github.com/Phosphorus15/intellij-prolog/workflows/CI/badge.svg)](https://github.com/Phosphorus15/intellij-prolog/actions)
+![CircleCI](https://img.shields.io/circleci/build/github/Phosphorus15/intellij-prolog?logo=circleci)
 [![][d-svg]][jb-url]
 [![][v-svg]][jb-url]
 
