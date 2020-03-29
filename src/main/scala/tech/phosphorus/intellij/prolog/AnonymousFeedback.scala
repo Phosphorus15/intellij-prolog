@@ -126,7 +126,7 @@ object AnonymousFeedback {
 
   private def generateGitHubIssueBody(details: mutable.Map[String, String], includeStacktrace: Boolean) =
     new StringBuilder().letIn(builder => {
-      val errorDescription = details.remove("error.description").getOrElse("")
+      val errorDescription = details.remove("error.description")
       val stackTrace = details.remove("error.stacktrace").getOrElse("")
       if (errorDescription.nonEmpty) builder.append(errorDescription).append("\n\n----------------------\n")
       for ((key, value) <- details) builder.append("- ").append(key).append(": ").append(value).append("\n")
