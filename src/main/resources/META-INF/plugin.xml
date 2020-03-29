@@ -64,6 +64,7 @@
         <applicationConfigurable groupId="language" displayName="Prolog"
                                  id="PrologLanguageConfigurable"
                                  instance="tech.phosphorus.intellij.prolog.settings.LanguageConfigurable"/>
+        <errorHandler implementation="tech.phosphorus.intellij.prolog.AnonymousFeedback$GitHubErrorReport"/>
     </extensions>
     <actions>
         <!-- Add your actions here -->
