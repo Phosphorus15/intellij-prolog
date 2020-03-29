@@ -20,7 +20,7 @@ apply plugin: "org.jetbrains.intellij"
 apply plugin: "org.jetbrains.grammarkit"
 
 group 'tech.phosphorus'
-version '0.1.0'
+version '0.1.1'
 
 sourceCompatibility = 1.8
 
@@ -124,5 +124,9 @@ task "generateDirs" {
 }
 
 patchPluginXml {
-    changeNotes """Initial plugin version"""
+    changeNotes """<ul>
+        <li>Fixed some silly bugs</li>
+        <li>Add easy-to-use GitHub bugs reporter</li>
+        <li>Introduced parser test coverage</li>
+    </ul>"""
 }
