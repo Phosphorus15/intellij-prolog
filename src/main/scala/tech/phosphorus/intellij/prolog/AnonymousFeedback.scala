@@ -22,9 +22,10 @@
 package tech.phosphorus.intellij.prolog
 
 import java.awt.Component
-import java.io.{IOException, ObjectInputStream, PrintWriter, StringWriter}
+import java.io.{BufferedReader, IOException, InputStreamReader, ObjectInputStream, PrintWriter, StringWriter}
 import java.net.URL
 import java.nio.charset.StandardCharsets
+import java.nio.file.{Files, Paths}
 import java.util
 import java.util.function.Consumer
 import java.util.{Base64, Collections}
@@ -50,11 +51,10 @@ import org.eclipse.egit.github.core.service.IssueService
 import org.eclipse.egit.github.core.{Issue, Label, RepositoryId}
 
 import scala.collection.JavaConversions._
+import scala.collection.mutable
 
 object AnonymousFeedback {
-  val tokenFile = "tech/phosphorus/intellij/prolog/settings/token.bin"
-  val gitRepoUser = "Phosphorus15"
-  val gitRepo = "intellij-prolog"
+  val tokenFile = "token.bin"
   val issueLabel = "bug"
 
   private implicit class FunctorAsPipeline[T](val t: T) extends AnyVal {
@@ -76,7 +76,7 @@ object AnonymousFeedback {
    * @return The report info that is then used in [GitHubErrorReporter] to show the user a balloon with the link
    *         of the created issue.
    */
-  private def sendFeedback(environmentDetails: Map[String, String]): SubmittedReportInfo = {
+  private def sendFeedback(environmentDetails: mutable.Map[String, String]): SubmittedReportInfo = {
     val logger = Logger.getInstance(getClass.getName)
     try {
       val resource: URL = getClass.getClassLoader.getResource(tokenFile)
@@ -87,7 +87,7 @@ object AnonymousFeedback {
       val gitAccessToken = decrypt(resource)
       val client = new GitHubClient()
       client.setOAuth2Token(gitAccessToken)
-      val repoID = new RepositoryId(gitRepoUser, gitRepo)
+      val repoID = RepositoryId.createFromUrl("https://github.com/Phosphorus15/intellij-prolog")
       val issueService = new IssueService(client)
       var newGibHubIssue = createNewGibHubIssue(environmentDetails)
       val duplicate = findFirstDuplicate(newGibHubIssue.getTitle, issueService, repoID)
@@ -97,11 +97,12 @@ object AnonymousFeedback {
         newGibHubIssue = duplicate.get
         isNewIssue = false
       } else newGibHubIssue = issueService.createIssue(repoID, newGibHubIssue)
-      return new SubmittedReportInfo(newGibHubIssue.getHtmlUrl, newGibHubIssue.getHtmlUrl,
+      new SubmittedReportInfo(newGibHubIssue.getHtmlUrl, newGibHubIssue.getHtmlUrl,
         if (isNewIssue) SubmissionStatus.NEW_ISSUE else SubmissionStatus.DUPLICATE)
     } catch {
       case e: IOException =>
-        return new SubmittedReportInfo(null,
+        e.printStackTrace()
+        new SubmittedReportInfo(null,
           "Github connection failed.",
           SubmissionStatus.FAILED)
     }
@@ -113,9 +114,9 @@ object AnonymousFeedback {
     service.pageIssues(repo, searchParameters).flatten.find(_.getTitle == uniqueTitle)
   }
 
-  private def createNewGibHubIssue(details: Map[String, String]) = new Issue().letIn(issue => {
+  private def createNewGibHubIssue(details: mutable.Map[String, String]) = new Issue().letIn(issue => {
     val errorMessage = details.remove("error.message")
-    issue.setTitle(s"$errorMessage")
+    issue.setTitle("[auto-generated" + s":${details.remove("error.hash").getOrElse("")}] " + (if (errorMessage.isDefined) errorMessage.get else "Plugin Error"))
     details.put("title", issue.getTitle)
     issue.setBody(generateGitHubIssueBody(details, includeStacktrace = true).toString())
     issue.setLabels(Collections.singletonList(new Label().letIn(label => {
@@ -123,13 +124,13 @@ object AnonymousFeedback {
     })))
   })
 
-  private def generateGitHubIssueBody(details: Map[String, String], includeStacktrace: Boolean) =
+  private def generateGitHubIssueBody(details: mutable.Map[String, String], includeStacktrace: Boolean) =
     new StringBuilder().letIn(builder => {
-      val errorDescription = details.remove("error.description")
-      val stackTrace = details.remove("error.stacktrace")
+      val errorDescription = details.remove("error.description").getOrElse("")
+      val stackTrace = details.remove("error.stacktrace").getOrElse("")
       if (errorDescription.nonEmpty) builder.append(errorDescription).append("\n\n----------------------\n")
-      for ((key, value) <- details) builder.append("- ").append(key).append(": ").append(value)
-      if (includeStacktrace) builder.append("\n```\n").append(stackTrace).append("```")
+      for ((key, value) <- details) builder.append("- ").append(key).append(": ").append(value).append("\n")
+      if (includeStacktrace) builder.append("\n```\n").append(stackTrace).append("```\n")
     })
 
   private val initVector = "RandomInitVector"
@@ -141,9 +142,14 @@ object AnonymousFeedback {
         new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), "AES"),
         new IvParameterSpec(initVector.getBytes(StandardCharsets.UTF_8)))
       return new String(cipher.doFinal(Base64.getDecoder.decode(file.openStream() |> (it => {
-        new ObjectInputStream(it).readObject().asInstanceOf[String]
+        new BufferedReader(new InputStreamReader(it)).readLine()
       }))))
     })
+  }
+
+  def main(args: Array[String]): Unit = {
+    if (args.length != 2) return
+    Files.write(Paths.get(args(1)), encrypt(args(0)).getBytes())
   }
 
   private def encrypt(value: String): String = {
@@ -156,7 +162,16 @@ object AnonymousFeedback {
   }
 
   class GitHubErrorReport extends ErrorReportSubmitter {
-    override def getReportActionText: String = "submit prolog plugin error"
+    override def getReportActionText: String = "Submit Issue"
+
+    override def submit(events: Array[IdeaLoggingEvent], info: String, parent: Component, consumer: com.intellij.util.Consumer[SubmittedReportInfo]): Boolean = {
+      val event = events.headOption
+      if (event.isDefined)
+        doSubmit(event.get, parent, new Consumer[SubmittedReportInfo] {
+          override def accept(t: SubmittedReportInfo): Unit = consumer.consume(t)
+        }, info)
+      else false
+    }
 
     def doSubmit(event: IdeaLoggingEvent, parent: Component, callback: Consumer[SubmittedReportInfo], desc: String): Boolean = {
       val dataContext = DataManager.getInstance().getDataContext(parent)
@@ -216,7 +231,7 @@ object AnonymousFeedback {
   }
 
   private class AnonymousFeedbackTask(project: Project, title: String, canBeCancelled: Boolean,
-                                      private val params: Map[String, String],
+                                      private val params: mutable.Map[String, String],
                                       private val callback: Consumer[SubmittedReportInfo]) extends Task.Backgroundable(project, title, canBeCancelled) {
     override def run(indicator: ProgressIndicator) {
       indicator.setIndeterminate(true)
@@ -228,12 +243,12 @@ object AnonymousFeedback {
                                 project: Project,
                                 error: GitHubErrorBean,
                                 appInfo: ApplicationInfoEx,
-                                namesInfo: ApplicationNamesInfo): Map[String, String] = {
+                                namesInfo: ApplicationNamesInfo): mutable.Map[String, String] = {
     PluginManagerCore.getPlugin(PluginId.findId("tech.phosphorus.intellij-prolog")) |> (plugin => {
       if (error.pluginName.isEmpty) error.pluginName = plugin.getName
       if (error.pluginVersion.isEmpty) error.pluginVersion = plugin.getVersion
     })
-    val params = Map(
+    val params = mutable.Map(
       "error.description" -> error.description,
       "Plugin Name" -> error.pluginName,
       "Plugin Version" -> error.pluginVersion,
