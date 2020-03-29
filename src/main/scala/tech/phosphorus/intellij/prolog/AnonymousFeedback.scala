@@ -128,7 +128,7 @@ object AnonymousFeedback {
     new StringBuilder().letIn(builder => {
       val errorDescription = details.remove("error.description")
       val stackTrace = details.remove("error.stacktrace").getOrElse("")
-      if (errorDescription.nonEmpty) builder.append(errorDescription).append("\n\n----------------------\n")
+      if (errorDescription.isDefined) builder.append(errorDescription).append("\n\n----------------------\n")
       for ((key, value) <- details) builder.append("- ").append(key).append(": ").append(value).append("\n")
       if (includeStacktrace) builder.append("\n```\n").append(stackTrace).append("```\n")
     })
