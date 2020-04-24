@@ -71,6 +71,8 @@ class PrologRunConfiguration(val project: Project, factory: ConfigurationFactory
 
 class PrologRunConfigurationFactory(ty: PrologRunConfigurationType) extends ConfigurationFactory(ty) {
   override def createTemplateConfiguration(project: Project): RunConfiguration = new PrologRunConfiguration(project, this)
+
+  override def getId: String = "Prolog"
 }
 
 class PrologRunConfigurationType extends ConfigurationType {
