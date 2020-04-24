@@ -52,8 +52,8 @@
                                   implementationClass="tech.phosphorus.intellij.prolog.project.PrologSimpleRunLineMarkerContributor"/>
 
         <!-- Basic definitions -->
-        <fileType name="Prolog file" implementationClass="tech.phosphorus.intellij.prolog.psi.PrologFileType"
-                  fieldName="INSTANCE" language="IJProlog" extensions="pl"/>
+        <fileType name="Prolog File" implementationClass="tech.phosphorus.intellij.prolog.psi.PrologFileType"
+                  fieldName="INSTANCE" language="IJProlog" extensions="pl;pro"/>
         <stubElementTypeHolder class="tech.phosphorus.intellij.prolog.psi.PrologTypes"/>
         <configurationType implementation="tech.phosphorus.intellij.prolog.project.PrologRunConfigurationType"/>
         <lang.parserDefinition language="IJProlog"
