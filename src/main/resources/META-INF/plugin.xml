@@ -21,13 +21,13 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- Annotators -->
-        <annotator language="Prolog"
+        <annotator language="IJProlog"
                    implementationClass="tech.phosphorus.intellij.prolog.annotator.SingletonVariableAnnotator"/>
-        <externalAnnotator language="Prolog"
+        <externalAnnotator language="IJProlog"
                            implementationClass="tech.phosphorus.intellij.prolog.annotator.PrologExternalAnnotator"/>
 
         <!-- Completion contributor -->
-        <completion.contributor language="Prolog"
+        <completion.contributor language="IJProlog"
                                 implementationClass="tech.phosphorus.intellij.prolog.completion.PrologCompletionContributor"/>
 
         <!-- Declaration handler -->
@@ -36,9 +36,9 @@
         <gotoSymbolContributor implementation="tech.phosphorus.intellij.prolog.references.PrologGotoPredicateContributor"/>
 
         <!-- Editor related -->
-        <lang.braceMatcher language="Prolog" implementationClass="tech.phosphorus.intellij.prolog.PrologBraceMatcher"/>
-        <lang.commenter language="Prolog" implementationClass="tech.phosphorus.intellij.prolog.MultiLineCommenter"/>
-        <lang.syntaxHighlighterFactory language="Prolog"
+        <lang.braceMatcher language="IJProlog" implementationClass="tech.phosphorus.intellij.prolog.PrologBraceMatcher"/>
+        <lang.commenter language="IJProlog" implementationClass="tech.phosphorus.intellij.prolog.MultiLineCommenter"/>
+        <lang.syntaxHighlighterFactory language="IJProlog"
                                        implementationClass="tech.phosphorus.intellij.prolog.PrologSyntaxHighlighterFactory"/>
 
 
@@ -48,15 +48,15 @@
         <!-- Run configurations -->
         <runConfigurationProducer
                 implementation="tech.phosphorus.intellij.prolog.project.PrologSimpleRunConfigurationProducer"/>
-        <runLineMarkerContributor language="Prolog"
+        <runLineMarkerContributor language="IJProlog"
                                   implementationClass="tech.phosphorus.intellij.prolog.project.PrologSimpleRunLineMarkerContributor"/>
 
         <!-- Basic definitions -->
         <fileType name="Prolog file" implementationClass="tech.phosphorus.intellij.prolog.psi.PrologFileType"
-                  fieldName="INSTANCE" language="Prolog" extensions="pl"/>
+                  fieldName="INSTANCE" language="IJProlog" extensions="pl"/>
         <stubElementTypeHolder class="tech.phosphorus.intellij.prolog.psi.PrologTypes"/>
         <configurationType implementation="tech.phosphorus.intellij.prolog.project.PrologRunConfigurationType"/>
-        <lang.parserDefinition language="Prolog"
+        <lang.parserDefinition language="IJProlog"
                                implementationClass="tech.phosphorus.intellij.prolog.PrologParserDefinition"/>
 
         <!-- Persistent services -->
