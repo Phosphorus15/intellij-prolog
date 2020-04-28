@@ -129,8 +129,7 @@ task "generateDirs" {
 
 patchPluginXml {
     changeNotes """<ul>
-        <li>Fixed some silly bugs</li>
-        <li>Add easy-to-use GitHub bugs reporter</li>
-        <li>Introduced parser test coverage</li>
+        <li>Fixed conflicts with other plugins</li>
+        <li>Plugin now supports *.pro extension</li>
     </ul>"""
 }
