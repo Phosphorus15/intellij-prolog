@@ -20,7 +20,7 @@ apply plugin: "org.jetbrains.intellij"
 apply plugin: "org.jetbrains.grammarkit"
 
 group 'tech.phosphorus'
-version '0.1.2'
+version '0.1.2-hotfix01'
 
 sourceCompatibility = 1.8
 
