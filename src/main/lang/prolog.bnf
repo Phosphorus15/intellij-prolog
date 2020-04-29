@@ -39,7 +39,7 @@
       integer='regexp:\d+'
       float='regexp:\d+(\.d+)?([Ee]\d+)?' // strict floating mode
       const_id='regexp:\p{Lower}(\p{Alnum}|_|-|:)*'
-      atom_id='regexp:\p{Upper}\p{Alnum}*'
+      atom_id='regexp:((\p{Upper}|_)(\p{Alnum}|_)*)'
       operator_id='regexp:[<=>:!+\-*/]+' // considering that operators in prolog can fly everywhere...
       string="regexp:('([^'\\]|\\.)*'|\"([^\"\\]|\\.)*\")"
     ]
