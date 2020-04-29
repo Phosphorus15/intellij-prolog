@@ -93,7 +93,7 @@ list_constructor ::= '[' ']' | '[' primary '|' primary ']' | '[' primary ']'
 
 common_val ::= common_predicate | ident | literal | list_constructor | '_'
 
-private common_val_or_paren ::= common_val | '(' common_val ')' | '{' common_val '}'
+private common_val_or_paren ::= common_val | '(' primary ')' | '{' primary '}'
 
 private primary ::= (common_val_or_paren | logical_not | operator_id) (common_val_or_paren | equiv_binary | logical_or  | operator_id)*
 
