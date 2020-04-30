@@ -35,8 +35,6 @@ jobs:
 
       - run: gradle dependencies
 
-      - run: echo intellijPublishToken=dummy > gradle.properties
-
       - save_cache:
           paths:
             - ~/.gradle

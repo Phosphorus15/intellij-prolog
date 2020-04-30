@@ -27,8 +27,6 @@ jobs:
         java-version: 11
     - name: Settle gradlew
       run: chmod +x gradlew
-    - name: Create gradle.properties
-      run: echo intellijPublishToken=dummy > gradle.properties
     - name: Parser generation
       env:
         CI: GitHub_Workflows

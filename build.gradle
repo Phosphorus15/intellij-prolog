@@ -48,10 +48,10 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 
-publishPlugin {
-    token intellijPublishToken
+task publishPlugin {
+    if ('intellijPublishToken' in properties)
+        token intellijPublishToken
 }
-
 
 // create your own .ijlocation if any alternatives should be suggested
 static def findIntellijPath() {
