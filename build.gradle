@@ -48,7 +48,7 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 
-task publishPlugin {
+publishPlugin {
     if ('intellijPublishToken' in properties)
         token properties['intellijPublishToken']
 }
