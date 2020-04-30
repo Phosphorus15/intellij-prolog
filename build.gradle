@@ -50,7 +50,7 @@ dependencies {
 
 task publishPlugin {
     if ('intellijPublishToken' in properties)
-        token intellijPublishToken
+        token properties['intellijPublishToken']
 }
 
 // create your own .ijlocation if any alternatives should be suggested
