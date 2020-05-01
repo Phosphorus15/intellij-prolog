@@ -36,7 +36,7 @@ INTEGER=[0-9]+
 FLOAT=[0-9]+(\.d+)?([Ee][0-9]+)?
 CONST_ID=(([:lowercase:])|_)(([:letter:]|[:digit:])|_|-|:)*
 ATOM_ID=(([:uppercase:])|_)(([:letter:]|[:digit:])|_)*
-OPERATOR_ID=[<=>:!+\-*/]+
+OPERATOR_ID=[<=>:!+\\\-*/]+
 STRING=('([^'\\]|\\.)*'|\"([^\"\\]|\\.)*\")
 
 %s IN_BLOCK_COMMENT

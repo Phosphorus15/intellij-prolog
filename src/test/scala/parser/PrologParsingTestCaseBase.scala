@@ -3,7 +3,7 @@ package parser
 import com.intellij.testFramework.ParsingTestCase
 import tech.phosphorus.intellij.prolog.PrologParserDefinition
 
-class PrologParsingTestCaseBase extends ParsingTestCase("", "pl", new PrologParserDefinition){
+class PrologParsingTestCaseBase extends ParsingTestCase("", "pl", new PrologParserDefinition) {
   override def getTestDataPath: String = "src/test/testData"
 
   def testBasicParserTest(): Unit = {
@@ -15,6 +15,10 @@ class PrologParsingTestCaseBase extends ParsingTestCase("", "pl", new PrologPars
   }
 
   def testIssue20(): Unit = {
+    doTest(true)
+  }
+
+  def testIssue27(): Unit = {
     doTest(true)
   }
 
