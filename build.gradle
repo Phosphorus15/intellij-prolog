@@ -49,8 +49,12 @@ dependencies {
 }
 
 publishPlugin {
-    if ('intellijPublishToken' in properties)
-        token properties['intellijPublishToken']
+    Properties properties = new Properties()
+    try {
+        properties.load(new FileInputStream("gradle.properties"))
+        token properties.getProperty("intellijPublishToken")
+    } catch(IOException ignored) {
+    }
 }
 
 // create your own .ijlocation if any alternatives should be suggested
