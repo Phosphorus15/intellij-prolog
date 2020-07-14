@@ -5,7 +5,7 @@ import java.nio.file.Paths
 import com.intellij.configurationStore.XmlSerializer
 import com.intellij.execution.actions.PauseOutputAction
 import com.intellij.execution.{DefaultExecutionResult, ExecutionResult, ExecutionTarget, Executor}
-import com.intellij.execution.configurations.{ConfigurationFactory, ConfigurationType, GeneralCommandLine, LocatableConfigurationBase, RunConfiguration, RunConfigurationBase, RunProfileState, RunnerSettings}
+import com.intellij.execution.configurations._
 import com.intellij.execution.filters.{TextConsoleBuilder, TextConsoleBuilderFactory}
 import com.intellij.execution.process.{ColoredProcessHandler, OSProcessHandler, ProcessTerminatedListener}
 import com.intellij.execution.runners.{ExecutionEnvironment, ProgramRunner}
