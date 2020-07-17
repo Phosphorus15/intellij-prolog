@@ -30,9 +30,8 @@ trait PrologPredicateStub extends StubElement[PrologPredicateId] {
   val name: String
 }
 
-class PrologPredicateStubImpl(stub: StubElement[_],override val name: String) extends PrologStubBase[PrologPredicateId](stub, PrologStubElementType.PREDICATE_ID) with PrologPredicateStub {
-
-}
+class PrologPredicateStubImpl(stub: StubElement[_],override val name: String)
+  extends PrologStubBase[PrologPredicateId](stub, PrologStubElementType.PREDICATE_ID) with PrologPredicateStub
 
 class PrologPredicateType(debugName: String) extends PrologStubElementType[PrologPredicateStub, PrologPredicateId](debugName) {
 

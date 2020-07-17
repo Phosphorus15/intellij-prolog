@@ -8,8 +8,9 @@ import tech.phosphorus.intellij.prolog.psi.{PrologToplevelExpr, PrologTrailingEx
 class SingletonVariableAnnotator extends Annotator {
   override def annotate(psiElement: PsiElement, annotationHolder: AnnotationHolder): Unit = {
     if (psiElement.isInstanceOf[PrologToplevelExpr] || psiElement.isInstanceOf[PrologTrailingExpr]) {
-      SingletonAnalysis.resolveLocalAtoms(psiElement).groupBy(_.getText).filter(_._2.length == 1)
-        .foreach(pair => annotationHolder.createWarningAnnotation(pair._2.head, f"Singleton variable `${pair._1}`"))
+      SingletonAnalysis.resolveLocalAtoms(psiElement).groupBy(_.getText)
+        .filter { case (_, elements) => elements.length == 1 }
+        .foreach { case (id, elements) => annotationHolder.createWarningAnnotation(elements.head, f"Singleton variable `$id`") }
     }
   }
 }

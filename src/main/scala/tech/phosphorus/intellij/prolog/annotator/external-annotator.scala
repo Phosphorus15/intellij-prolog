@@ -11,6 +11,7 @@ import tech.phosphorus.intellij.prolog.psi._
 import tech.phosphorus.intellij.prolog.settings.PrologShowSettingsAction
 import tech.phosphorus.intellij.prolog.toolchain.PrologToolchain
 
+import scala.annotation.tailrec
 import scala.collection.mutable
 
 class AnnotatorTask
@@ -53,15 +54,25 @@ class PrologExternalAnnotator extends ExternalAnnotator[AnnotatorTask, Array[Lin
   def searchElementAt(file: PsiFile, line: Int): mutable.Seq[PsiElement] = {
     val document = PsiDocumentManager.getInstance(file.getProject).getDocument(file)
     val offset = document.getLineStartOffset(line)
-    var element = file.getViewProvider.findElementAt(offset)
-    while (element != null && document.getLineNumber(element.getTextOffset) < line) element = element.getNextSibling
-    var candidates: mutable.MutableList[PsiElement] = mutable.MutableList()
-    while (element != null && document.getLineNumber(element.getTextOffset) == line) {
-      candidates += element
-      element = element.getNextSibling
+    val element = file.getViewProvider.findElementAt(offset)
+    Stream.iterate(element)(_.getNextSibling)
+      .takeWhile(it => it != null && document.getLineNumber(it.getTextOffset) < line)
+      .lastOption match {
+      case Some(element) =>
+        Stream.iterate(element)(_.getNextSibling)
+          .takeWhile(it => it != null && document.getLineNumber(it.getTextOffset) == line)
+          .to(mutable.MutableList.canBuildFrom)
+      case _ => mutable.MutableList()
     }
-    candidates
   }
+
+  @tailrec
+  final def findTop(region: PsiElement): PsiElement =
+    if (region.getParent == null ||
+      (region.isInstanceOf[PrologToplevelExpr] && region.isInstanceOf[PrologTrailingExpr]
+        && region.isInstanceOf[PrologPredicate] && region.isInstanceOf[PrologExprHead]
+        && region.isInstanceOf[PrologExprBody])) region
+    else findTop(region.getParent)
 
   def applyAnnotation(file: PsiFile, linterReport: LinterReport, holder: AnnotationHolder): Annotation = {
     // always need this for candidate selection
@@ -69,11 +80,7 @@ class PrologExternalAnnotator extends ExternalAnnotator[AnnotatorTask, Array[Lin
     val document = PsiDocumentManager.getInstance(file.getProject).getDocument(file)
     val candidates = searchElementAt(file, linterReport.line - 1)
     val element = if (linterReport.location.isEmpty) {
-      var region = candidates.sortWith(_.getTextRange.getLength > _.getTextRange.getLength).head
-      while (region.getParent != null && !(region.isInstanceOf[PrologToplevelExpr] || region.isInstanceOf[PrologTrailingExpr] || region.isInstanceOf[PrologPredicate] || region.isInstanceOf[PrologExprHead] || region.isInstanceOf[PrologExprBody])) {
-        region = region.getParent
-      }
-      region
+      findTop(candidates.sortWith(_.getTextRange.getLength > _.getTextRange.getLength).head)
     } else {
       val targetOffset = calcOffset(document.getText, document.getLineStartOffset(linterReport.line - 1), linterReport.location.get)
       if (targetOffset > 0 && file.getViewProvider.findElementAt(targetOffset) != null) {
@@ -90,13 +97,10 @@ class PrologExternalAnnotator extends ExternalAnnotator[AnnotatorTask, Array[Lin
   }
 
   def calcOffset(sequence: CharSequence, startOffset: Int, column: Int): Int = {
-    var i = 1
-    var offset = 0
-    while (i < column) {
-      val c = Character.codePointAt(sequence, startOffset)
-      i = i + (if (c == '\t') 8 else 1)
-      offset += 1
-    }
+    val offset = Stream.iterate((1, 0)) { case (i, off) =>
+      (i + (if (Character.codePointAt(sequence, off) == '\t') 8 else 1), off + 1)
+    }.takeWhile{ case (i, _) => i < column }
+      .lastOption.map{ case (_, off) => off }.getOrElse(0)
     startOffset + offset
   }
 

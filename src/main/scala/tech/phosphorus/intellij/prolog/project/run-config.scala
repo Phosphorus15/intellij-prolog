@@ -96,8 +96,8 @@ class PrologRunProfileState(configuration: PrologRunConfiguration, executionEnvi
     .createBuilder(configuration.project, GlobalSearchScope.allScope(configuration.project))
 
   override def execute(executor: Executor, programRunner: ProgramRunner[_]): ExecutionResult = {
-    var command = new GeneralCommandLine(configuration.toolchain.executablePath.toString)
-    command = command.withParameters("-t", "halt", "-q", configuration.targetFile)
+    val command = new GeneralCommandLine(configuration.toolchain.executablePath.toString)
+      .withParameters("-t", "halt", "-q", configuration.targetFile)
     if (configuration.extraArgs != null && configuration.extraArgs.trim.nonEmpty) {
       command.addParameter(configuration.extraArgs)
     }
