@@ -39,6 +39,6 @@ Prolog language support for Intellij IDEA.
 
 ### Special Thanks
 
-The development of this project is under Jetbrains's Open Source License's support and there incredible IDEs.
+The development of this project is under Jetbrains's Open Source License's support and their incredible IDEs.
 
 [![Jetbrains OSL](/jetbrains-logo.png)](https://www.jetbrains.com/?from=intellij-prolog)
