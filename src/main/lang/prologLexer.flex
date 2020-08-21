@@ -34,9 +34,9 @@ COMMENT=(%.*)
 BLOCK_COMMENT="/*" !([^]* "*/" [^]*) ("*/")?
 INTEGER=[0-9]+
 FLOAT=[0-9]+(\.d+)?([Ee][0-9]+)?
-CONST_ID=[:lowercase:](([:letter:]|[:digit:])|_|-|:)*
-ATOM_ID=[:uppercase:]([:letter:]|[:digit:])*
-OPERATOR_ID=[<=>:!+\-*/]+
+CONST_ID=(([:lowercase:])|_)(([:letter:]|[:digit:])|_|-|:)*
+ATOM_ID=(([:uppercase:])|_)(([:letter:]|[:digit:])|_)*
+OPERATOR_ID=[<=>:!+\\\-*/]+
 STRING=('([^'\\]|\\.)*'|\"([^\"\\]|\\.)*\")
 
 %s IN_BLOCK_COMMENT

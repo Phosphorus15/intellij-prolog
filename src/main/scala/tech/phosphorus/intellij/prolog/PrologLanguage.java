@@ -8,7 +8,7 @@ public class PrologLanguage extends Language {
     public static final PrologLanguage INSTANCE = new PrologLanguage();
 
     protected PrologLanguage() {
-        super("Prolog");
+        super("IJProlog");
     }
 
 }

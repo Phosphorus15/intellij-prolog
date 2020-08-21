@@ -5,7 +5,7 @@ import java.nio.file.Paths
 import com.intellij.configurationStore.XmlSerializer
 import com.intellij.execution.actions.PauseOutputAction
 import com.intellij.execution.{DefaultExecutionResult, ExecutionResult, ExecutionTarget, Executor}
-import com.intellij.execution.configurations.{ConfigurationFactory, ConfigurationType, GeneralCommandLine, LocatableConfigurationBase, RunConfiguration, RunConfigurationBase, RunProfileState, RunnerSettings}
+import com.intellij.execution.configurations._
 import com.intellij.execution.filters.{TextConsoleBuilder, TextConsoleBuilderFactory}
 import com.intellij.execution.process.{ColoredProcessHandler, OSProcessHandler, ProcessTerminatedListener}
 import com.intellij.execution.runners.{ExecutionEnvironment, ProgramRunner}
@@ -71,6 +71,8 @@ class PrologRunConfiguration(val project: Project, factory: ConfigurationFactory
 
 class PrologRunConfigurationFactory(ty: PrologRunConfigurationType) extends ConfigurationFactory(ty) {
   override def createTemplateConfiguration(project: Project): RunConfiguration = new PrologRunConfiguration(project, this)
+
+  override def getId: String = "Prolog"
 }
 
 class PrologRunConfigurationType extends ConfigurationType {
@@ -93,9 +95,9 @@ class PrologRunProfileState(configuration: PrologRunConfiguration, executionEnvi
     .getInstance()
     .createBuilder(configuration.project, GlobalSearchScope.allScope(configuration.project))
 
-  override def execute(executor: Executor, programRunner: ProgramRunner[_ <: RunnerSettings]): ExecutionResult = {
-    var command = new GeneralCommandLine(configuration.toolchain.executablePath.toString)
-    command = command.withParameters("-t", "halt", "-q", configuration.targetFile)
+  override def execute(executor: Executor, programRunner: ProgramRunner[_]): ExecutionResult = {
+    val command = new GeneralCommandLine(configuration.toolchain.executablePath.toString)
+      .withParameters("-t", "halt", "-q", configuration.targetFile)
     if (configuration.extraArgs != null && configuration.extraArgs.trim.nonEmpty) {
       command.addParameter(configuration.extraArgs)
     }

@@ -21,7 +21,7 @@ public class PrologFileType extends LanguageFileType {
     @NotNull
     @Override
     public String getName() {
-        return "Prolog file";
+        return "Prolog File";
     }
 
     @NotNull

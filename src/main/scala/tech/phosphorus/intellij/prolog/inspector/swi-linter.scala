@@ -28,7 +28,7 @@ class SwiPrologLinter(val toolchain: PrologToolchain) {
 
   def lintFile(path: String, workdir: String = null): Array[LinterReport] = {
     if (canLint) {
-//      println(workdir)
+      //      println(workdir)
       val ttyOut = new GeneralCommandLine(toolchain.executablePath.toString)
         .withWorkDirectory(workdir)
         .withParameters("-g", "halt", "-l", path)
@@ -36,32 +36,43 @@ class SwiPrologLinter(val toolchain: PrologToolchain) {
       val lines = ttyOut.getStderrLines.toArray(Array[String]())
       val lints = mutable.MutableList[LinterReport]()
       var afterInitialize = false
-      for(line <- lines) {
+      for (line <- lines) {
         SwiPrologLinter.locationPattern.findFirstMatchIn(line) match {
           case Some(pattern) =>
             val list = pattern.subgroups
-            lints += new LinterReport(list.head match {
-              case "ERROR" => new Error
+            lints += new LinterReport(list.headOption match {
+              case Some("ERROR") => new Error
               case _ => new Warning
             }, list(1).toInt, Option(list(3)).map(_.toInt), list(4))
             afterInitialize = true
           case None =>
-            if(lints.isEmpty && !afterInitialize) {
+            if (lints.isEmpty && !afterInitialize) {
               val pattern = "(Warning|ERROR):\\s+(.+)".r.findFirstMatchIn(line)
               assert(pattern.isDefined)
-              val list = pattern.get.subgroups
-              lints += new LinterReport(list.head match {
-                  case "ERROR" => new Error
-                  case _ => new Warning
-                }, 1, None, list.last)
+              pattern.foreach { pattern =>
+                val list = pattern.subgroups
+                // we have no CATs so no combination here :sad:
+                (list.headOption, list.lastOption) match {
+                  case (Some(head), Some(last)) =>
+                    lints += new LinterReport(head match {
+                      case "ERROR" => new Error
+                      case _ => new Warning
+                    }, 1, None, last)
+                  case _ =>
+                }
+              }
             } else {
               assert(lints.nonEmpty) // a error should be filed
               val pattern = "(Warning|ERROR):\\s+(.+)".r.findFirstMatchIn(line)
-              if(pattern.isDefined) {
-                val list = pattern.get.subgroups
-                lints.last.message += f"\n${list.last}"
-              } else {
-                lints.last.message += f"\n ${line.trim}"
+              lints.lastOption.foreach { lastLint =>
+                pattern match {
+                  case Some(pattern) =>
+                    pattern.subgroups.lastOption.foreach { last =>
+                      lastLint.message += f"\n${last}"
+                    }
+                  case None =>
+                    lastLint.message += f"\n ${line.trim}"
+                }
               }
             }
         }

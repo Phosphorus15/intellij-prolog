@@ -58,18 +58,18 @@ abstract class PrologReferenceMixin(node: ASTNode) extends ASTWrapperPsiElement(
   override def bindToElement(element: PsiElement): PsiElement = throw new IncorrectOperationException("Unsupported")
 
   override def multiResolve(b: Boolean): Array[ResolveResult] = {
-//    println("multi resolve attempt for " + getCanonicalText)
+    //    println("multi resolve attempt for " + getCanonicalText)
     val file = getContainingFile
     if (file == null) return ResolveResult.EMPTY_ARRAY
     if (!isValid || getProject.isDisposed) return ResolveResult.EMPTY_ARRAY
-//    println("entering resolution for file " + file.getName)
+    //    println("entering resolution for file " + file.getName)
     ResolveCache.getInstance(getProject).resolveWithCaching(
       this, new PolyVariantResolver[PrologReferenceMixin] {
         override def resolve(t: PrologReferenceMixin, b: Boolean): Array[ResolveResult] =
           ReferenceResolution.resolveWith(new NameIdentifierResolveProcessor(t.getCanonicalText), t)
       }, true, b, file
     )
-//    println("cached result " + cc.length)
+    //    println("cached result " + cc.length)
   }
 
   override def handleElementRename(s: String): PsiElement = {
@@ -93,13 +93,13 @@ class NameIdentifierResolveProcessor(name: String) extends ResolveProcessor[PsiE
 
   override def execute(psiElement: PsiElement, resolveState: ResolveState): Boolean = {
     // we should allow multiple-candidates
-//    println(f"new element within $psiElement ${psiElement.getClass} \n ${psiElement.getParent.getText}")
+    //    println(f"new element within $psiElement ${psiElement.getClass} \n ${psiElement.getParent.getText}")
     if (psiElement.isInstanceOf[PrologPredicateId]) {
-//      println("accepted hash " + psiElement.hashCode() + " " + psiElement.getText + " " + name)
+      //      println("accepted hash " + psiElement.hashCode() + " " + psiElement.getText + " " + name)
       if (name.equals(psiElement.getText)) {
-//        println("finally accepted")
+        //        println("finally accepted")
         candidates += new PsiElementResolveResult(psiElement, true)
-//        println("candidates len " + candidates.size)
+        //        println("candidates len " + candidates.size)
       }
     }
     true // keep processing
@@ -112,21 +112,13 @@ object ReferenceResolution {
                  maxScope: PsiElement => Boolean,
                  state: ResolveState = ResolveState.initial()): Boolean = {
     if (!entrance.isValid) return false
-    var prevParent = entrance
-    var scope = entrance
-
-//    println(f"resolution scope $scope")
-
-    while (scope != null) {
-//      println(f"resolution scope ${scope.getText} ${scope.getClass}")
-      if (!scope.processDeclarations(processor, state, prevParent, entrance)) return false
-      if (maxScope(scope)) scope = null
-      else {
-        prevParent = scope
-        scope = prevParent.getContext
+    Stream.iterate((entrance, entrance)) { case (prevParent, scope) =>
+      if (maxScope(scope)) (prevParent, null)
+      else (scope, prevParent.getContext)
+    }.takeWhile { case (_, scope) => scope != null }
+      .forall { case (prevParent, scope) =>
+        scope.processDeclarations(processor, state, prevParent, entrance)
       }
-    }
-    true
   }
 
   def resolveWithCond[T](processor: ResolveProcessor[T], ref: PsiReference, cond: PsiElement => Boolean): Array[ResolveResult] = {
@@ -139,10 +131,10 @@ object ReferenceResolution {
 
   def resolveWith[T](processor: ResolveProcessor[T], ref: PsiReference): Array[ResolveResult] = {
     val file = ref.getElement.getContainingFile
-//    println("started resolution in file " + file.getName)
+    //    println("started resolution in file " + file.getName)
     treeWalkUp(processor, ref.getElement, _ == file)
     processor.getCandidates
-//    println(s"${c.length}")
-//    c
+    //    println(s"${c.length}")
+    //    c
   }
 }

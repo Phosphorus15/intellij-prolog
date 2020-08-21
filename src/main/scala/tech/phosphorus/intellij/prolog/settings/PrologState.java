@@ -9,12 +9,12 @@ public class PrologState {
 
 	public String toolchain;
 
+	public String stdLibrary;
+
 	public PrologState(String toolchain, String stdLibrary) {
 		this.toolchain = toolchain;
 		this.stdLibrary = stdLibrary;
 	}
-
-	public String stdLibrary;
 
 	public PrologState(String toolchain) {
 		this.toolchain = toolchain;
