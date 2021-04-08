@@ -164,7 +164,7 @@ object AnonymousFeedback {
   class GitHubErrorReport extends ErrorReportSubmitter {
     override def getReportActionText: String = "Submit Issue"
 
-    override def submit(events: Array[IdeaLoggingEvent], info: String, parent: Component, consumer: com.intellij.util.Consumer[SubmittedReportInfo]): Boolean = {
+    override def submit(events: Array[IdeaLoggingEvent], info: String, parent: Component, consumer: com.intellij.util.Consumer[ _ >: SubmittedReportInfo]): Boolean = {
       val event = events.headOption
       if (event.isDefined)
         doSubmit(event.get, parent, new Consumer[SubmittedReportInfo] {
