@@ -25,7 +25,7 @@ jobs:
     - name: Settle gradlew
       run: chmod +x gradlew
     - name: Publish token
-      run: echo intellijPublishToken=$INTELLIJPUBLISHTOKEN > gradle.properties
+      run: pwd & echo intellijPublishToken=$INTELLIJPUBLISHTOKEN > intellij-prolog/gradle.properties
     - name: Parser generation
       env:
         CI: GitHub_Workflows
