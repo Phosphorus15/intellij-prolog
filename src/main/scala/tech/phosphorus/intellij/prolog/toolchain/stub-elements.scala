@@ -37,7 +37,7 @@ class PrologPredicateType(debugName: String) extends PrologStubElementType[Prolo
 
   override def createPsi(stubT: PrologPredicateStub): PrologPredicateId = new PrologPredicateIdImpl(stubT, this)
 
-  override def createStub(psiT: PrologPredicateId, stubElement: StubElement[_]): PrologPredicateStub = new PrologPredicateStubImpl(stubElement, psiT.getText)
+  override def createStub(psiT: PrologPredicateId, stubElement: StubElement[_ <: PsiElement]): PrologPredicateStub = new PrologPredicateStubImpl(stubElement, psiT.getText)
 
   override def serialize(t: PrologPredicateStub, stubOutputStream: StubOutputStream): Unit = stubOutputStream.writeName(t.name)
 
