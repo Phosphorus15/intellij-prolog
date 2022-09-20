@@ -1,6 +1,6 @@
 Intellij Prolog
 ---
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/1299c8a1241f433ea8d4ce28341b17b2)](https://app.codacy.com/manual/Phosphorus15/intellij-prolog?utm_source=github.com&utm_medium=referral&utm_content=Phosphorus15/intellij-prolog&utm_campaign=Badge_Grade_Settings)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/76c2b24af8794d2aa8f0396d3bd96d2e)](https://www.codacy.com/gh/Phosphorus15/intellij-prolog/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Phosphorus15/intellij-prolog&amp;utm_campaign=Badge_Grade)
 [![CI](https://github.com/Phosphorus15/intellij-prolog/workflows/CI/badge.svg)](https://github.com/Phosphorus15/intellij-prolog/actions)
 ![CircleCI](https://img.shields.io/circleci/build/github/Phosphorus15/intellij-prolog?logo=circleci)
 [![][d-svg]][jb-url]
