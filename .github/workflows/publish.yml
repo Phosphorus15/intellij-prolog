@@ -26,13 +26,13 @@ jobs:
       run: chmod +x gradlew
     - name: Publish token
       run: pwd & echo intellijPublishToken=$INTELLIJPUBLISHTOKEN > intellij-prolog/gradle.properties
-    - name: Parser generation
-      env:
-        CI: GitHub_Workflows
-      uses: eskatos/gradle-command-action@v1
-      with:
-        # Gradle command line arguments, see gradle --help
-        arguments: generatePrologParser generatePrologLexer
+#    - name: Parser generation
+#      env:
+#        CI: GitHub_Workflows
+#      uses: eskatos/gradle-command-action@v1
+#      with:
+#        # Gradle command line arguments, see gradle --help
+#        arguments: generatePrologParser generatePrologLexer
     - name: Gradle Command
       env:
         CI: GitHub_Workflows 

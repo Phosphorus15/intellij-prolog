@@ -1,36 +1,33 @@
 buildscript {
     repositories {
-        if (!System.getenv("CI")?.trim()) {
-            maven { url "https://maven.aliyun.com/repository/gradle-plugin" }
-        } else {
-            mavenCentral()
-        }
+        mavenCentral()
+        maven { url "https://www.jetbrains.com/intellij-repository/releases" }
+        maven { url "https://cache-redirector.jetbrains.com/intellij-dependencies" }
     }
     dependencies {
-        classpath "gradle.plugin.org.jetbrains.intellij.plugins:gradle-intellij-plugin:0.4.16"
-        classpath "gradle.plugin.org.jetbrains.intellij.plugins:gradle-grammarkit-plugin:2020.1"
+//        classpath "gradle.plugin.org.jetbrains.intellij.plugins:gradle-intellij-plugin:1.7.0"
+//        classpath "gradle.plugin.org.jetbrains.intellij.plugins:gradle-grammarkit-plugin:2020.1"
     }
 }
 
 plugins {
     id 'scala'
+    id "org.jetbrains.intellij" version '1.9.0'
+//    id "org.jetbrains.grammarkit" version "2021.2.2"
 }
 
-apply plugin: "org.jetbrains.intellij"
-apply plugin: "org.jetbrains.grammarkit"
+//apply plugin: "org.jetbrains.intellij"
+//apply plugin: "org.jetbrains.grammarkit"
 
 group 'tech.phosphorus'
-version '0.1.2.2-lts'
+version '0.1.3.0-beta2'
 
-sourceCompatibility = 1.8
+sourceCompatibility = 11
 
 repositories {
-    if (!System.getenv("CI")?.trim()) {
-        maven { url 'http://maven.aliyun.com/nexus/content/repositories/central/' }
-        maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
-    } else {
-        mavenCentral()
-    }
+    mavenCentral()
+    maven { url "https://www.jetbrains.com/intellij-repository/releases" }
+    maven { url "https://cache-redirector.jetbrains.com/intellij-dependencies" }
 }
 
 allprojects {
@@ -42,18 +39,34 @@ allprojects {
 }
 
 dependencies {
-    compile group: 'org.eclipse.mylyn.github', name: 'org.eclipse.egit.github.core', version: '2.1.5'
+    implementation group: 'org.eclipse.mylyn.github', name: 'org.eclipse.egit.github.core', version: '2.1.5'
     implementation 'org.scala-lang:scala-library:2.11.12'
     testImplementation 'org.scalatest:scalatest_2.11:3.0.0'
-    testCompile group: 'junit', name: 'junit', version: '4.12'
+    testImplementation group: 'junit', name: 'junit', version: '4.13.1'
 }
 
 publishPlugin {
     Properties properties = new Properties()
     try {
         properties.load(new FileInputStream("gradle.properties"))
-        token properties.getProperty("intellijPublishToken")
-    } catch(IOException ignored) {
+        token = properties.getProperty("intellijPublishToken")
+    } catch (IOException ignored) {
+    }
+}
+
+runPluginVerifier {
+    ideVersions = ["IC-2022.2.2", "CL-2022.2.3", "WS-2022.2.2"]
+}
+
+signPlugin {
+    Properties properties = new Properties()
+    try {
+        properties.load(new FileInputStream("gradle.properties"))
+        certificateChain = Files.readString(Paths.get(properties.getProperty("keyChain"))).stripIndent()
+        privateKey = Files.readString(Paths.get(properties.getProperty("privateKey"))).stripIndent()
+        password = properties.getProperty("signPassword")
+    } catch (IOException ignored) {
+//        ignored.printStackTrace()
     }
 }
 
@@ -87,43 +100,48 @@ intellij {
     if (!System.getenv("CI")?.trim() && localDist != null) {
         localPath localDist.toString()
     } else {
-        version "IU-2020.1"
+        type = "IU"
+        version = "2022.2.2"
     }
 }
 
 sourceSets.main.scala.srcDirs = ['src/main/gen', 'src/main/scala']
 
-import org.jetbrains.grammarkit.tasks.*
+//apply plugin: 'org.jetbrains.grammarkit'
+//
+//import org.jetbrains.grammarkit.tasks.GenerateLexerTask
+//import org.jetbrains.grammarkit.tasks.GenerateParserTask
 
 import java.nio.file.Files
 import java.nio.file.Paths
 
-task generatePrologLexer(type: GenerateLexer) {
-    source = "src/main/lang/prologLexer.flex"
 
-    targetDir = "src/main/gen/tech/phosphorus/intellij/prolog"
-
-    targetClass = "PrologLexer"
-
-    purgeOldFiles = true
-}
-
-task generatePrologParser(type: GenerateParser) {
-    // source bnf file
-    source = "src/main/lang/prolog.bnf"
-
-    // optional, task-specific root for the generated files. Default: none
-    targetRoot = 'src/main/gen'
-
-    // path to a parser file, relative to the targetRoot
-    pathToParser = 'tech/phosphorus/intellij/prolog/psi/PrologParser.java'
-
-    // path to a directory with generated psi files, relative to the targetRoot
-    pathToPsiRoot = 'tech/phosphorus/intellij/prolog/psi/'
-
-    // if set, plugin will remove a parser output file and psi output directory before generating new ones. Default: false
-    purgeOldFiles = true
-}
+//task generatePrologLexer(type: GenerateLexer) {
+//    source = "src/main/lang/prologLexer.flex"
+//
+//    targetDir = "src/main/gen/tech/phosphorus/intellij/prolog"
+//
+//    targetClass = "PrologLexer"
+//
+//    purgeOldFiles = true
+//}
+//
+//task generatePrologParser(type: GenerateParser) {
+//    // source bnf file
+//    source = "src/main/lang/prolog.bnf"
+//
+//    // optional, task-specific root for the generated files. Default: none
+//    targetRoot = 'src/main/gen'
+//
+//    // path to a parser file, relative to the targetRoot
+//    pathToParser = 'tech/phosphorus/intellij/prolog/psi/PrologParser.java'
+//
+//    // path to a directory with generated psi files, relative to the targetRoot
+//    pathToPsiRoot = 'tech/phosphorus/intellij/prolog/psi/'
+//
+//    // if set, plugin will remove a parser output file and psi output directory before generating new ones. Default: false
+//    purgeOldFiles = true
+//}
 
 task "generateDirs" {
     sourceSets*.scala.srcDirs*.each {
@@ -132,7 +150,10 @@ task "generateDirs" {
 }
 
 patchPluginXml {
-    changeNotes """<ul>
-        <li>patch for version compatibility</li>
+    changeNotes = """<ul>
+        <li>refactor for latest (2022.2.2) IDEA</li>
+        <li>improve API compatibility</li>
+        <li>improved singletion checking</li>
+        <li>fix minor highlight bug within identifiers</li>
     </ul>"""
 }

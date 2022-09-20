@@ -1,6 +1,6 @@
 .gradle/
 .idea/
-src/main/gen/
+#src/main/gen/ this must no longer be true because the current lexer is tailored
 build/
 idea-flex.skeleton
 jflex-1.7.0-2.jar

@@ -29,14 +29,13 @@ import java.nio.file.{Files, Paths}
 import java.util
 import java.util.function.Consumer
 import java.util.{Base64, Collections}
-
-import com.intellij.diagnostic.{AbstractMessage, IdeErrorsDialog, ReportMessages}
-import com.intellij.ide.DataManager
-import com.intellij.ide.plugins.PluginManagerCore
+import com.intellij.diagnostic.{AbstractMessage, DiagnosticBundle, IdeErrorsDialog, ReportMessages}
+import com.intellij.ide.{BrowserUtil, DataManager}
+import com.intellij.ide.plugins.{PluginManagerCore, PluginUtil}
 import com.intellij.idea.IdeaLogger
-import com.intellij.notification.{NotificationListener, NotificationType}
+import com.intellij.notification.{NotificationAction, NotificationGroupManager, NotificationListener, NotificationType}
 import com.intellij.openapi.actionSystem.CommonDataKeys
-import com.intellij.openapi.application.ApplicationNamesInfo
+import com.intellij.openapi.application.{ApplicationManager, ApplicationNamesInfo}
 import com.intellij.openapi.application.ex.ApplicationInfoEx
 import com.intellij.openapi.diagnostic.SubmittedReportInfo.SubmissionStatus
 import com.intellij.openapi.diagnostic._
@@ -44,6 +43,7 @@ import com.intellij.openapi.extensions.PluginId
 import com.intellij.openapi.progress.{EmptyProgressIndicator, ProgressIndicator, ProgressManager, Task}
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
+
 import javax.crypto.Cipher
 import javax.crypto.spec.{IvParameterSpec, SecretKeySpec}
 import org.eclipse.egit.github.core.client.GitHubClient
@@ -164,7 +164,7 @@ object AnonymousFeedback {
   class GitHubErrorReport extends ErrorReportSubmitter {
     override def getReportActionText: String = "Submit Issue"
 
-    override def submit(events: Array[IdeaLoggingEvent], info: String, parent: Component, consumer: com.intellij.util.Consumer[ _ >: SubmittedReportInfo]): Boolean = {
+    override def submit(events: Array[IdeaLoggingEvent], info: String, parent: Component, consumer: com.intellij.util.Consumer[_ >: SubmittedReportInfo]): Boolean = {
       val event = events.headOption
       if (event.isDefined)
         doSubmit(event.get, parent, new Consumer[SubmittedReportInfo] {
@@ -180,7 +180,8 @@ object AnonymousFeedback {
         IdeaLogger.ourLastActionId,
         desc,
         event.getMessage)
-      IdeErrorsDialog.findPluginId(event.getThrowable).letIn { pluginId =>
+      ApplicationManager.getApplication.getService(classOf[PluginUtil])
+        .findPluginId(event.getThrowable).letIn { pluginId =>
         PluginManagerCore.getPlugin(pluginId).letIn { ideaPluginDescriptor =>
           if (!ideaPluginDescriptor.isBundled) {
             bean.pluginName = ideaPluginDescriptor.getName
@@ -208,10 +209,17 @@ object AnonymousFeedback {
                                     private val project: Project) extends Consumer[SubmittedReportInfo] {
       override def accept(reportInfo: SubmittedReportInfo) {
         consumer.accept(reportInfo)
-        if (reportInfo.getStatus == SubmissionStatus.FAILED) ReportMessages.GROUP.createNotification(ReportMessages.ERROR_REPORT,
-          reportInfo.getLinkText, NotificationType.ERROR, null).setImportant(false).notify(project)
-        else ReportMessages.GROUP.createNotification(ReportMessages.ERROR_REPORT, reportInfo.getLinkText,
-          NotificationType.INFORMATION, NotificationListener.URL_OPENING_LISTENER).setImportant(false).notify(project)
+        val errorReport = ApplicationManager.getApplication.getService(classOf[NotificationGroupManager]).getNotificationGroup("Error Report")
+        if (reportInfo.getStatus == SubmissionStatus.FAILED) errorReport.createNotification(DiagnosticBundle.message("error.report.title"),
+          reportInfo.getLinkText, NotificationType.ERROR).setImportant(false).notify(project)
+        else errorReport.createNotification(DiagnosticBundle.message("error.report.title"), reportInfo.getLinkText,
+          NotificationType.INFORMATION).addAction(
+          NotificationAction.createSimple("Report.", new Runnable() {
+            def run(): Unit = {
+              BrowserUtil.open(reportInfo.getLinkText)
+            }
+          })
+        ).setImportant(false).notify(project) // the old listener api is deprecated so action should be forged
       }
     }
 

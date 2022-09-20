@@ -1,5 +1,6 @@
 package tech.phosphorus.intellij.prolog.settings
 
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.{PersistentStateComponent, ServiceManager, State, Storage}
 
 @State(name = "PrologStatePersistence", storages = Array(new Storage("prolog.xml")))
@@ -19,6 +20,6 @@ object PrologStatePersistence {
   var state = new PrologState
 
   def getInstance(): PrologStatePersistence = {
-    ServiceManager.getService(classOf[PrologStatePersistence])
+    ApplicationManager.getApplication.getService(classOf[PrologStatePersistence])
   }
 }

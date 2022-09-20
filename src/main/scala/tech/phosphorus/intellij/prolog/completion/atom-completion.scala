@@ -8,6 +8,11 @@ import tech.phosphorus.intellij.prolog.psi.{PrologPsiUtil, PrologToplevelExpr, P
 import tech.phosphorus.intellij.prolog.OptionLetIn._
 
 class PrologAtomCompletion extends CompletionProvider[CompletionParameters]() {
+
+  def failSilent(err: String): Unit = {
+
+  }
+
   override def addCompletions(v: CompletionParameters, processingContext: ProcessingContext, completionResultSet: CompletionResultSet): Unit = {
     val psi = v.getOriginalPosition
     val project = v.getEditor.getProject
@@ -23,7 +28,7 @@ class PrologAtomCompletion extends CompletionProvider[CompletionParameters]() {
               LookupElementBuilder.create(element.getText)
             )
           )
-      }.getOrElse(throw new IncorrectOperationException("unable top locate parent psi element"))
+      }.getOrElse(failSilent("unable top locate parent psi element"))
     }
   }
 }

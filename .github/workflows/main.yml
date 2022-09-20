@@ -27,13 +27,14 @@ jobs:
         java-version: 11
     - name: Settle gradlew
       run: chmod +x gradlew
-    - name: Parser generation
-      env:
-        CI: GitHub_Workflows
-      uses: eskatos/gradle-command-action@v1
-      with:
-        # Gradle command line arguments, see gradle --help
-        arguments: generatePrologParser generatePrologLexer
+    # since 0.1.3.0-beta2, the parsers are not auto-gened but was fine-tuned instead
+#    - name: Parser generation
+#      env:
+#        CI: GitHub_Workflows
+#      uses: eskatos/gradle-command-action@v1
+#      with:
+#        # Gradle command line arguments, see gradle --help
+#        arguments: generatePrologParser generatePrologLexer
     - name: Gradle Command
       env:
         CI: GitHub_Workflows 

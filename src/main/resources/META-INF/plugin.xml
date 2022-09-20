@@ -20,9 +20,14 @@
     <depends>com.intellij.modules.platform</depends>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
-    <idea-version since-build="203.5981.155"/>
+    <idea-version since-build="221.3427"/>
 
     <extensions defaultExtensionNs="com.intellij">
+
+        <notificationGroup id="Prolog Plugin Notification"
+                           displayType="BALLOON"
+                           />
+
         <!-- Annotators -->
         <annotator language="IJProlog"
                    implementationClass="tech.phosphorus.intellij.prolog.annotator.SingletonVariableAnnotator"/>

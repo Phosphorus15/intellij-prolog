@@ -11,9 +11,9 @@ import javax.swing.Icon
 import tech.phosphorus.intellij.prolog.PrologLanguage
 import tech.phosphorus.intellij.prolog.toolchain.PrologPredicateStub
 
-abstract class PrologDeclarationMixin(stub: PrologPredicateStub, stubType: IStubElementType[StubElement[_], PsiElement], node: ASTNode) extends StubBasedPsiElementBase[PrologPredicateStub](stub, stubType, node) with PsiNameIdentifierOwner with NavigationItem{
+abstract class PrologDeclarationMixin(stub: PrologPredicateStub, stubType: IStubElementType[_ <: StubElement[_], _ <: PsiElement], node: ASTNode) extends StubBasedPsiElementBase[PrologPredicateStub](stub, stubType, node) with PsiNameIdentifierOwner with NavigationItem{
 
-  def this(stub: PrologPredicateStub, stubType: IStubElementType[StubElement[_], PsiElement]) {
+  def this(stub: PrologPredicateStub, stubType: IStubElementType[_ <: StubElement[_], _ <: PsiElement]) {
     this(stub, stubType, null)
   }
 

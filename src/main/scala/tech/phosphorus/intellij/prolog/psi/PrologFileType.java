@@ -10,7 +10,7 @@ import javax.swing.*;
 
 public class PrologFileType extends LanguageFileType {
 
-    public static final Icon FILE = IconLoader.getIcon("/icons/file.svg");
+    public static final Icon FILE = IconLoader.getIcon("/icons/file.svg", PrologFileType.class);
 
     public static final PrologFileType INSTANCE = new PrologFileType();
 

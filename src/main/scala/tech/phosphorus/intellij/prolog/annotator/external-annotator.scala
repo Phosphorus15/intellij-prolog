@@ -1,9 +1,8 @@
 package tech.phosphorus.intellij.prolog.annotator
 
 import java.nio.file.{Files, Paths}
-
-import com.intellij.lang.annotation.{Annotation, AnnotationHolder, ExternalAnnotator}
-import com.intellij.notification.{NotificationGroup, NotificationType, SingletonNotificationManager}
+import com.intellij.lang.annotation.{Annotation, AnnotationBuilder, AnnotationHolder, ExternalAnnotator, HighlightSeverity}
+import com.intellij.notification.{NotificationDisplayType, NotificationGroup, NotificationGroupManager, NotificationType, SingletonNotificationManager}
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.psi.{PsiDocumentManager, PsiElement, PsiFile}
 import tech.phosphorus.intellij.prolog.inspector.{Error, LinterReport, SwiPrologLinter}
@@ -28,11 +27,18 @@ class PrologExternalAnnotator extends ExternalAnnotator[AnnotatorTask, Array[Lin
 
   lazy val toolchain = new PrologToolchain(Paths.get(PrologToolchain.instanceToolchain()))
 
+  lazy val notificationManager: NotificationGroupManager = ApplicationManager.getApplication.getService(classOf[NotificationGroupManager])
+
   override def collectInformation(file: PsiFile): AnnotatorTask = {
     if (!toolchain.validate()) {
       if (!GlobalSwiAlertLock.alertAlready)
-        new SingletonNotificationManager(NotificationGroup.balloonGroup("Prolog Toolchain Not Found"), NotificationType.WARNING, null)
-          .notify("Prolog toolchain not detected", "configure a valid toolchain to enable external code linter", file.getProject, null, new PrologShowSettingsAction)
+        notificationManager
+          .getNotificationGroup("Prolog Plugin Notification")
+          .createNotification("Prolog toolchain not detected", "Configure a valid toolchain to enable external code linter", NotificationType.WARNING)
+          .addAction(new PrologShowSettingsAction)
+          .notify(file.getProject)
+      //        new SingletonNotificationManager("", NotificationType.WARNING)
+      //          .notify("Prolog toolchain not detected", "configure a valid toolchain to enable external code linter", file.getProject, null, new PrologShowSettingsAction)
       GlobalSwiAlertLock.alertAlready = true
       Abort()
     } else Task(file.getText, file.getVirtualFile.getParent.getPath, new SwiPrologLinter(toolchain))
@@ -74,7 +80,7 @@ class PrologExternalAnnotator extends ExternalAnnotator[AnnotatorTask, Array[Lin
         && region.isInstanceOf[PrologExprBody])) region
     else findTop(region.getParent)
 
-  def applyAnnotation(file: PsiFile, linterReport: LinterReport, holder: AnnotationHolder): Annotation = {
+  def applyAnnotation(file: PsiFile, linterReport: LinterReport, holder: AnnotationHolder): AnnotationBuilder = {
     // always need this for candidate selection
     //    println(s"${linterReport.location} ${linterReport.line} ${linterReport.message}")
     val document = PsiDocumentManager.getInstance(file.getProject).getDocument(file)
@@ -91,22 +97,22 @@ class PrologExternalAnnotator extends ExternalAnnotator[AnnotatorTask, Array[Lin
       }
     }
     linterReport.ty match {
-      case Error() => holder.createErrorAnnotation(element, linterReport.message)
-      case _ => holder.createWarningAnnotation(element, linterReport.message)
+      case Error() => holder.newAnnotation(HighlightSeverity.ERROR, linterReport.message).range(element) // createErrorAnnotation(element, linterReport.message)
+      case _ => holder.newAnnotation(HighlightSeverity.WARNING, linterReport.message).range(element) // holder.createWarningAnnotation(element, linterReport.message)
     }
   }
 
   def calcOffset(sequence: CharSequence, startOffset: Int, column: Int): Int = {
     val offset = Stream.iterate((1, 0)) { case (i, off) =>
       (i + (if (Character.codePointAt(sequence, off) == '\t') 8 else 1), off + 1)
-    }.takeWhile{ case (i, _) => i < column }
-      .lastOption.map{ case (_, off) => off }.getOrElse(0)
+    }.takeWhile { case (i, _) => i < column }
+      .lastOption.map { case (_, off) => off }.getOrElse(0)
     startOffset + offset
   }
 
   override def apply(file: PsiFile, annotationResult: Array[LinterReport], holder: AnnotationHolder): Unit = {
     super.apply(file, annotationResult, holder)
-    annotationResult.foreach(applyAnnotation(file, _, holder))
+    annotationResult.foreach(applyAnnotation(file, _, holder).notify())
   }
 
 
