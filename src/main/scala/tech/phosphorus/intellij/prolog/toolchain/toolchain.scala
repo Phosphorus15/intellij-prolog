@@ -52,7 +52,7 @@ class PrologToolchain(val location: Path, var library: Path = null) {
   def getSpec: (String, String) = {
     val format = ".* (\\d+\\.\\d+\\.\\d+) for (.*)".r
     val format(version, arch) = new GeneralCommandLine(executablePath.toString).withParameters("--version")
-      .captureOutput().getStdout.trim
+      .captureOutput().left.get.getStdout.trim
     (version, arch)
   }
 

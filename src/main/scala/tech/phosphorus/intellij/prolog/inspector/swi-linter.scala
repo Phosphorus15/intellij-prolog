@@ -32,7 +32,7 @@ class SwiPrologLinter(val toolchain: PrologToolchain) {
         .withWorkDirectory(workdir)
         .withParameters("-g", "halt", "-l", path)
         .captureOutput()
-      val lines = ttyOut.getStderrLines.toArray(Array[String]())
+      val lines = ttyOut.left.get.getStderrLines.toArray(Array[String]())
       val lints = mutable.MutableList[LinterReport]()
       var afterInitialize = false
       for (line <- lines) {

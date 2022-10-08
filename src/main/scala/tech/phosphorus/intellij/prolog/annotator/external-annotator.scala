@@ -80,26 +80,28 @@ class PrologExternalAnnotator extends ExternalAnnotator[AnnotatorTask, Array[Lin
         && region.isInstanceOf[PrologExprBody])) region
     else findTop(region.getParent)
 
-  def applyAnnotation(file: PsiFile, linterReport: LinterReport, holder: AnnotationHolder): AnnotationBuilder = {
+  def applyAnnotation(file: PsiFile, linterReport: LinterReport, holder: AnnotationHolder): Option[AnnotationBuilder] = {
     // always need this for candidate selection
     //    println(s"${linterReport.location} ${linterReport.line} ${linterReport.message}")
     val document = PsiDocumentManager.getInstance(file.getProject).getDocument(file)
     val candidates = searchElementAt(file, linterReport.line - 1)
     val element = if (linterReport.location.isEmpty) {
-      findTop(candidates.sortWith(_.getTextRange.getLength > _.getTextRange.getLength).head)
+      candidates.sortWith(_.getTextRange.getLength > _.getTextRange.getLength)
+        .headOption.map(findTop)
     } else {
       val targetOffset = calcOffset(document.getText, document.getLineStartOffset(linterReport.line - 1), linterReport.location.get)
       if (targetOffset > 0 && file.getViewProvider.findElementAt(targetOffset) != null) {
         // somewhat wild ?
-        file.getViewProvider.findElementAt(targetOffset - 1)
+        Option(file.getViewProvider.findElementAt(targetOffset - 1))
       } else {
-        candidates.sortWith(_.getTextRange.getLength > _.getTextRange.getLength).head
+        candidates.sortWith(_.getTextRange.getLength > _.getTextRange.getLength).headOption
       }
     }
-    linterReport.ty match {
-      case Error() => holder.newAnnotation(HighlightSeverity.ERROR, linterReport.message).range(element) // createErrorAnnotation(element, linterReport.message)
-      case _ => holder.newAnnotation(HighlightSeverity.WARNING, linterReport.message).range(element) // holder.createWarningAnnotation(element, linterReport.message)
-    }
+    element.map(element =>
+      linterReport.ty match {
+        case Error() => holder.newAnnotation(HighlightSeverity.ERROR, linterReport.message).range(element) // createErrorAnnotation(element, linterReport.message)
+        case _ => holder.newAnnotation(HighlightSeverity.WARNING, linterReport.message).range(element) // holder.createWarningAnnotation(element, linterReport.message)
+      })
   }
 
   def calcOffset(sequence: CharSequence, startOffset: Int, column: Int): Int = {
@@ -112,7 +114,7 @@ class PrologExternalAnnotator extends ExternalAnnotator[AnnotatorTask, Array[Lin
 
   override def apply(file: PsiFile, annotationResult: Array[LinterReport], holder: AnnotationHolder): Unit = {
     super.apply(file, annotationResult, holder)
-    annotationResult.foreach(applyAnnotation(file, _, holder).notify())
+    annotationResult.foreach(applyAnnotation(file, _, holder).foreach(_.create()))
   }
 
 

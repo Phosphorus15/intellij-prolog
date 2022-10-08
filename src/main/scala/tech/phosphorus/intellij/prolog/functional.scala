@@ -13,18 +13,20 @@ import scala.reflect.ClassTag
 object FunctionalImplicits {
 
   implicit class ExecutedGeneralCommandLine(cmd: GeneralCommandLine) {
-    def captureOutput(timeout: Int = 1000): ProcessOutput = {
+    def captureOutput(timeout: Int = 1000): Result[ProcessOutput] = {
       try {
-        new CapturingProcessHandler(cmd).runProcess(timeout)
+        Left(new CapturingProcessHandler(cmd).runProcess(timeout))
       } catch {
-        case _: ExecutionException => null
+        case e: ExecutionException => Right(e)
       }
     }
   }
 
   implicit class Nullable[T](val t: T) extends AnyVal {
     def asOption(): Option[T] = Option(t)
+
     def isDefined: Boolean = t != null
+
     def isNull: Boolean = !isDefined
   }
 
@@ -32,11 +34,11 @@ object FunctionalImplicits {
 
   implicit class ExceptionMonad[T](val t: Result[T]) extends Monad[T, Result] {
 
-    def this(t : T) {
+    def this(t: T) {
       this(Left(t))
     }
 
-    override def >>=[B](f: T => Result[B])(implicit classTag: ClassTag[B]): Result[B] = if(t.isRight) Right(t.right.get) else f(t.left.get)
+    override def >>=[B](f: T => Result[B])(implicit classTag: ClassTag[B]): Result[B] = if (t.isRight) Right(t.right.get) else f(t.left.get)
 
     override def <*>[B](f: Result[T => B])(implicit classTag: ClassTag[B]): Result[B] = t match {
       case Left(a) => f match {
@@ -46,21 +48,21 @@ object FunctionalImplicits {
       case Right(r) => Right(r)
     }
 
-    override def <@>[B](f: T => B)(implicit classTag: ClassTag[B]): Result[B] = if(t.isRight) Right(t.right.get) else Left(f(t.left.get))
+    override def <@>[B](f: T => B)(implicit classTag: ClassTag[B]): Result[B] = if (t.isRight) Right(t.right.get) else Left(f(t.left.get))
   }
 
-  implicit class OptionT[T](val t: Option[T]) extends Monad[T, Option]{
+  implicit class OptionT[T](val t: Option[T]) extends Monad[T, Option] {
     override def <@>[B](f: T => B)(implicit classTag: ClassTag[B]): Option[B] = t.map(f)
 
     override def >>=[B](f: T => Option[B])(implicit classTag: ClassTag[B]): Option[B] = if (t.isEmpty) None else f(t.get)
 
-    override def <*>[B](f: Option[T => B])(implicit classTag: ClassTag[B]): Option[B] = if (t.isEmpty) None else f.map(_(t.get))
+    override def <*>[B](f: Option[T => B])(implicit classTag: ClassTag[B]): Option[B] = if (t.isEmpty) None else f.map(_ (t.get))
   }
 
   implicit class ArrayT[T](val t: Array[T]) extends Monad[T, Array] {
     override def >>=[B](f: T => Array[B])(implicit classTag: ClassTag[B]): Array[B] = t.flatMap(v => f(v).t).toArray
 
-    override def <*>[B](f: Array[T => B])(implicit classTag: ClassTag[B]): Array[B] = t.flatMap(v => f.map(_(v))).toArray
+    override def <*>[B](f: Array[T => B])(implicit classTag: ClassTag[B]): Array[B] = t.flatMap(v => f.map(_ (v))).toArray
 
     override def <@>[B](f: T => B)(implicit classTag: ClassTag[B]): Array[B] = t.map(f)
   }
@@ -68,21 +70,21 @@ object FunctionalImplicits {
 }
 
 object OptionLetIn {
-  implicit class LetIn[T](val v: Option[T]) extends OptionT[T](v){
+  implicit class LetIn[T](val v: Option[T]) extends OptionT[T](v) {
     def let[B](f: T => B)(implicit classTag: ClassTag[B]): Option[B] = super.<@>(f)
   }
 }
 
 trait Functor[A, Impl[T]] {
-  def <@> [B](f: A => B)(implicit classTag: ClassTag[B]): Impl[B]
+  def <@>[B](f: A => B)(implicit classTag: ClassTag[B]): Impl[B]
 }
 
 trait Applicative[A, Impl[T]] extends Functor[A, Impl] {
-  def <*> [B](f: Impl[A => B])(implicit classTag: ClassTag[B]): Impl[B]
+  def <*>[B](f: Impl[A => B])(implicit classTag: ClassTag[B]): Impl[B]
 }
 
 trait Monad[A, Impl[T]] extends Applicative[A, Impl] {
-  def >>= [B](f: A => Impl[B])(implicit classTag: ClassTag[B]): Impl[B]
+  def >>=[B](f: A => Impl[B])(implicit classTag: ClassTag[B]): Impl[B]
 }
 
 object RunnableImplicits {
