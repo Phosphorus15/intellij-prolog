@@ -7,23 +7,33 @@ import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.{AnAction, CommonDataKeys}
 import com.intellij.openapi.util.Ref
 import com.intellij.psi.PsiElement
+import tech.phosphorus.intellij.prolog.FunctionalImplicits.Nullable
 import tech.phosphorus.intellij.prolog.psi.{PrologFileType, PrologPsiUtil, PrologRefPredicateId, PrologTrailingExpr, PrologTypes}
 
 class PrologSimpleRunConfigurationProducer extends LazyRunConfigurationProducer[PrologRunConfiguration] {
+
+  private def getVirtualFile(configurationContext: ConfigurationContext) =
+    configurationContext.getPsiLocation.asOption().map(_.getContainingFile).fold(
+      configurationContext.getDataContext.getData(CommonDataKeys.VIRTUAL_FILE)
+    )(f => f.getVirtualFile).asOption()
+
   override def setupConfigurationFromContext(t: PrologRunConfiguration, configurationContext: ConfigurationContext, ref: Ref[PsiElement]): Boolean = {
-    val file = configurationContext.getDataContext.getData(CommonDataKeys.VIRTUAL_FILE)
-    if(file.getFileType != PrologFileType.INSTANCE) {
+    val file = getVirtualFile(configurationContext)
+    if (file.isEmpty || file.get.getFileType != PrologFileType.INSTANCE) {
       return false
     }
-    t.targetFile = file.getPath
-    t.setName(file.getPresentableName)
+    file.foreach(file => {
+      t.targetFile = file.getPath
+      t.setName(file.getPresentableName)
+    })
     true
   }
 
   override def getConfigurationFactory: ConfigurationFactory = (new PrologRunConfigurationType).factories(0)
 
   override def isConfigurationFromContext(t: PrologRunConfiguration, configurationContext: ConfigurationContext): Boolean = {
-    t.targetFile == configurationContext.getDataContext.getData(CommonDataKeys.VIRTUAL_FILE).getPath
+    val file = getVirtualFile(configurationContext)
+    file.fold(false)(f => t.targetFile == f.getPath)
   }
 }
 
@@ -31,7 +41,7 @@ class PrologSimpleRunLineMarkerContributor extends RunLineMarkerContributor {
   override def getInfo(psiElement: PsiElement): RunLineMarkerContributor.Info = {
     if (psiElement.getNode.getElementType == PrologTypes.CONST_ID && psiElement.getParent != null
       && psiElement.getParent.isInstanceOf[PrologRefPredicateId] && psiElement.getParent.getText == "initialization") {
-      if(PrologPsiUtil.findParentWith(psiElement.getParent, _.isInstanceOf[PrologTrailingExpr]).isDefined) {
+      if (PrologPsiUtil.findParentWith(psiElement.getParent, _.isInstanceOf[PrologTrailingExpr]).isDefined) {
         val actions = ExecutorAction.getActions(0)
         return new RunLineMarkerContributor.Info(AllIcons.RunConfigurations.TestState.Run
           , actions
