@@ -25,7 +25,7 @@ class PrologToolchain(val location: Path, var library: Path = null) {
   // Update custom library location from persistence
   def updateLibrary(): Boolean = {
     val newLib = PrologStatePersistence.getInstance().getState.stdLibrary
-    if(newLib != null) {
+    if (newLib != null) {
       library = Paths.get(newLib)
     }
     validateLibrary()
@@ -41,12 +41,18 @@ class PrologToolchain(val location: Path, var library: Path = null) {
   }
 
   def stdlibPath: Path = {
-    Option(library).getOrElse(location.resolve("../library").toRealPath())
+    Option(library).getOrElse(
+      try {
+        location.resolve("../library").toRealPath()
+      } catch {
+        case _: Throwable => location.resolve("../library")
+      }
+    )
   }
 
   def loadStdlib: Option[VirtualFile] = if (validateLibrary()) {
     val fs = LocalFileSystem.getInstance()
-    Some(fs.refreshAndFindFileByPath(stdlibPath.toString))
+    fs.refreshAndFindFileByPath(stdlibPath.toString).asOption()
   } else None
 
   def getSpec: (String, String) = {
@@ -101,10 +107,10 @@ object PrologToolchain {
 
   /** Note that this function changes persistent value */
   @Contract(pure = false) def instanceLibrary(toolchainLocation: String): String = {
-    if(toolchainLocation == null || toolchainLocation.trim.isEmpty) return ""
+    if (toolchainLocation == null || toolchainLocation.trim.isEmpty) return ""
     val toolchainVanilla = new PrologToolchain(Paths.get(toolchainLocation))
-    if(toolchainVanilla.validate()) {
-      if(toolchainVanilla.validateLibraryRaw()) return Option(toolchainVanilla.library).map(_.toString).getOrElse("")
+    if (toolchainVanilla.validate()) {
+      if (toolchainVanilla.validateLibraryRaw()) return Option(toolchainVanilla.library).map(_.toString).getOrElse("")
       PrologStatePersistence.getInstance().loadState(new PrologState(toolchainLocation, toolchainVanilla.stdlibPath.toString))
       toolchainVanilla.stdlibPath.toString
     } else ""
