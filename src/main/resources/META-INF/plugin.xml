@@ -20,7 +20,7 @@
     <depends>com.intellij.modules.platform</depends>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
-    <idea-version since-build="223.4884" until-build="231.*"/>
+    <idea-version since-build="222.4345" until-build="223.*"/>
 
     <extensions defaultExtensionNs="com.intellij">
 
@@ -46,6 +46,7 @@
         <!-- Editor related -->
         <lang.braceMatcher language="IJProlog" implementationClass="tech.phosphorus.intellij.prolog.PrologBraceMatcher"/>
         <lang.commenter language="IJProlog" implementationClass="tech.phosphorus.intellij.prolog.MultiLineCommenter"/>
+        <colorSettingsPage implementation="tech.phosphorus.intellij.prolog.PrologColorSettingsPage"/>
         <lang.syntaxHighlighterFactory language="IJProlog"
                                        implementationClass="tech.phosphorus.intellij.prolog.PrologSyntaxHighlighterFactory"/>
 
