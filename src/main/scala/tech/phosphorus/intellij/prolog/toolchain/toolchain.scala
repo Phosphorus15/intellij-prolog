@@ -2,7 +2,6 @@ package tech.phosphorus.intellij.prolog.toolchain
 
 import java.io.{File, FileFilter}
 import java.nio.file.{Files, Path, Paths}
-
 import tech.phosphorus.intellij.prolog.FunctionalImplicits._
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.openapi.util.SystemInfo
@@ -12,6 +11,7 @@ import tech.phosphorus.intellij.prolog.settings.{PrologState, PrologStatePersist
 
 import scala.collection.mutable
 import scala.language.implicitConversions
+import scala.util.Try
 
 // Currently there's only swi support
 class PrologToolchain(val location: Path, var library: Path = null) {
@@ -42,11 +42,9 @@ class PrologToolchain(val location: Path, var library: Path = null) {
 
   def stdlibPath: Path = {
     Option(library).getOrElse(
-      try {
+      Try {
         location.resolve("../library").toRealPath()
-      } catch {
-        case _: Throwable => location.resolve("../library")
-      }
+      }.getOrElse(location.resolve("../library"))
     )
   }
 

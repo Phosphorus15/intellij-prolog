@@ -11,7 +11,7 @@ import tech.phosphorus.intellij.prolog.psi.{PrologAtomReferenceMixin, PrologPred
 import tech.phosphorus.intellij.prolog.toolchain.PrologPredicateStubIndex
 import tech.phosphorus.intellij.prolog.SingletonObject._
 
-class PrologGotoDeclarationHandler extends GotoDeclarationHandler{
+class PrologGotoDeclarationHandler extends GotoDeclarationHandler {
   override def getGotoDeclarationTargets(psiElement: PsiElement, i: Int, editor: Editor): Array[PsiElement] = {
     if (psiElement.getLanguage == PrologLanguage.INSTANCE) {
       val id = psiElement.getParent

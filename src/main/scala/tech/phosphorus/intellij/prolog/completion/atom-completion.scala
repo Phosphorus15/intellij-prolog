@@ -21,7 +21,7 @@ class PrologAtomCompletion extends CompletionProvider[CompletionParameters]() {
       PrologPsiUtil
         .findParentWith(psi, element =>
           element.isInstanceOf[PrologToplevelExpr]
-          || element.isInstanceOf[PrologTrailingExpr]).let { top =>
+            || element.isInstanceOf[PrologTrailingExpr]).let { top =>
         SingletonAnalysis.resolveLocalAtoms(top).filterNot(_.getText == psi.getText).filter(_.getText.contains(psi.getText))
           .foreach(element =>
             completionResultSet.addElement(

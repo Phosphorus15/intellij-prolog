@@ -9,17 +9,19 @@ import com.intellij.util.ProcessingContext
 import tech.phosphorus.intellij.prolog.psi.{PrologParameterListMixin, PrologPredicateId}
 import tech.phosphorus.intellij.prolog.toolchain.PrologPredicateStubIndex
 
+import scala.collection.JavaConversions.collectionAsScalaIterable
 
-class PrologPredicateStubCompletionProvider extends CompletionProvider[CompletionParameters](){
+
+class PrologPredicateStubCompletionProvider extends CompletionProvider[CompletionParameters]() {
   override def addCompletions(v: CompletionParameters, processingContext: ProcessingContext, completionResultSet: CompletionResultSet): Unit = {
     val psi = v.getOriginalPosition
     val project = v.getEditor.getProject
-    if(psi == null || project == null) return
+    if (psi == null || project == null) return
     PrologPredicateStubIndex.getAllKeys(project).filter(_.contains(psi.getText)).foreach(key => {
       val elements = StubIndex.getElements(PrologPredicateStubIndex.KEY, key, project, GlobalSearchScope.allScope(project), classOf[PrologPredicateId])
-      elements.toArray(Array[PsiElement]()).foreach(element => {
+      elements.foreach(element => {
         val parameterList = element.getParent.getLastChild
-//        println(parameterList.getClass)
+        //        println(parameterList.getClass)
         val parameters = parameterList match {
           case mixin: PrologParameterListMixin =>
             "/" + mixin.calculateParameters()
