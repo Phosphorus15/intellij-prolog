@@ -19,7 +19,8 @@ class PrologSimpleRunConfigurationProducer extends LazyRunConfigurationProducer[
 
   override def setupConfigurationFromContext(t: PrologRunConfiguration, configurationContext: ConfigurationContext, ref: Ref[PsiElement]): Boolean = {
     val file = getVirtualFile(configurationContext)
-    if (file.isEmpty || file.get.getFileType != PrologFileType.INSTANCE) {
+    val fileType = file.map(_.getFileType)
+    if (file.isEmpty || fileType.isEmpty || fileType.get != PrologFileType.INSTANCE) {
       return false
     }
     file.foreach(file => {
