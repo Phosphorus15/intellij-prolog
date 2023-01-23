@@ -273,7 +273,7 @@ object AnonymousFeedback {
       "error.stacktrace" -> error.stackTrace,
       "error.hash" -> error.exceptionHash)
     for (attachment <- error.attachments)
-      params.put("Attachment ${attachment.name}", attachment.getEncodedBytes)
+      params.put(f"Attachment ${attachment.getName}", attachment.getEncodedBytes)
     params
   }
 
