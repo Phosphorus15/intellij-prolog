@@ -11,6 +11,7 @@ import tech.phosphorus.intellij.prolog.formatting.PrologFormattingModelBuilder.c
 import tech.phosphorus.intellij.prolog.psi.PrologTypes
 
 import java.util
+import scala.annotation.tailrec
 
 class PrologFormattingModelBuilder extends FormattingModelBuilder {
   override def createModel(formattingContext: FormattingContext): FormattingModel = {
@@ -36,8 +37,13 @@ object PrologFormattingModelBuilder {
 class RuleBlock(node: ASTNode, wrap: Wrap, alignment: Alignment, spacingBuilder: SpacingBuilder) extends AbstractBlock(node, wrap, alignment) {
   override def buildChildren(): util.List[Block] = {
     val blocks = new util.ArrayList[Block]()
-    var child = node.getFirstChildNode
-    while (child != null) {
+    addBlocks(node.getFirstChildNode,blocks)
+    return blocks
+  }
+
+  @tailrec
+  private def addBlocks(child: ASTNode, blocks:util.ArrayList[Block]): Unit = {
+    if(child != null) {
       if (child.getElementType == PrologTypes.UNIFY || child.getElementType == PrologTypes.COMMA || child.getElementType == PrologTypes.DOT) {
         val block = new RuleBlock(child, Wrap.createWrap(WrapType.ALWAYS, false), Alignment.createAlignment(),
           spacingBuilder)
@@ -47,9 +53,8 @@ class RuleBlock(node: ASTNode, wrap: Wrap, alignment: Alignment, spacingBuilder:
           spacingBuilder)
         blocks.add(block)
       }
-      child = child.getTreeNext
+      addBlocks(child.getTreeNext, blocks)
     }
-    return blocks
   }
 
   override def getIndent: Indent = Indent.getNoneIndent()
