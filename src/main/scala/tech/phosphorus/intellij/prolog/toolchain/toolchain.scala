@@ -57,7 +57,7 @@ class PrologToolchain(val location: Path, var library: Path = null) {
     val format = ".* (\\d+\\.\\d+\\.\\d+) for (.*)".r
     val extractedVersion = new GeneralCommandLine(executablePath.toString).withParameters("--version")
       .captureOutput()
-    val format(version, arch) = if (extractedVersion.isLeft) extractedVersion.left.get.getStdout.trim else "uknown"
+    val format(version, arch) = if (extractedVersion.isLeft) extractedVersion.left.get.getStdout.trim else "unknown"
     (version, arch)
   }
 
