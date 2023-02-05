@@ -139,7 +139,7 @@ class PrologColorSettingsPage extends ColorSettingsPage {
       "\tC1 is C * N,\n" +
       "\tfact(N1, C1, R).\n" +
       "\n" +
-      "fact(0, R, R) :- !.";
+      "fact(0, R, R) :- !."
   }
 
   override def getDisplayName(): String = {
