@@ -1,10 +1,10 @@
 package tech.phosphorus.intellij.prolog.formatting
 
-import com.intellij.formatting.{Alignment, Block, FormattingContext, FormattingModel, FormattingModelBuilder, FormattingModelProvider, Indent, Spacing, SpacingBuilder, Wrap, WrapType}
+import com.intellij.formatting._
 import com.intellij.lang.{ASTNode, Language}
 import com.intellij.psi.TokenType
 import com.intellij.psi.codeStyle.LanguageCodeStyleSettingsProvider.SettingsType
-import com.intellij.psi.codeStyle.{CodeStyleSettings, CodeStyleSettingsCustomizable, CustomCodeStyleSettings, LanguageCodeStyleSettingsProvider}
+import com.intellij.psi.codeStyle.{CodeStyleSettings, CodeStyleSettingsCustomizable, LanguageCodeStyleSettingsProvider}
 import com.intellij.psi.formatter.common.AbstractBlock
 import tech.phosphorus.intellij.prolog.PrologLanguage
 import tech.phosphorus.intellij.prolog.formatting.PrologFormattingModelBuilder.createSpaceBuilder
@@ -17,8 +17,8 @@ class PrologFormattingModelBuilder extends FormattingModelBuilder {
   override def createModel(formattingContext: FormattingContext): FormattingModel = {
     val codeStyleSettings = formattingContext.getCodeStyleSettings
     FormattingModelProvider
-      .createFormattingModelForPsiFile(formattingContext.getContainingFile(),
-        new RuleBlock(formattingContext.getNode(),
+      .createFormattingModelForPsiFile(formattingContext.getContainingFile,
+        new RuleBlock(formattingContext.getNode,
           Wrap.createWrap(WrapType.NONE, false),
           Alignment.createAlignment(),
           createSpaceBuilder(codeStyleSettings)),
@@ -30,38 +30,44 @@ object PrologFormattingModelBuilder {
   def createSpaceBuilder(settings: CodeStyleSettings): SpacingBuilder = {
     return new SpacingBuilder(settings, PrologLanguage.INSTANCE)
       .between(PrologTypes.UNIFY, PrologTypes.DOT)
-      .spaceIf(settings.getCommonSettings(PrologLanguage.INSTANCE.getID()).ALIGN_MULTILINE_METHOD_BRACKETS);
+      .spaceIf(settings.getCommonSettings(PrologLanguage.INSTANCE.getID).ALIGN_MULTILINE_METHOD_BRACKETS);
   }
 }
 
 class RuleBlock(node: ASTNode, wrap: Wrap, alignment: Alignment, spacingBuilder: SpacingBuilder) extends AbstractBlock(node, wrap, alignment) {
   override def buildChildren(): util.List[Block] = {
     val blocks = new util.ArrayList[Block]()
-    addBlocks(node.getFirstChildNode,blocks)
+    addBlocks(node.getFirstChildNode, blocks)
     return blocks
   }
 
   @tailrec
-  private def addBlocks(child: ASTNode, blocks:util.ArrayList[Block]): Unit = {
-    if(child != null) {
-      if (child.getElementType == PrologTypes.UNIFY || child.getElementType == PrologTypes.COMMA || child.getElementType == PrologTypes.DOT) {
-        val block = new RuleBlock(child, Wrap.createWrap(WrapType.ALWAYS, false), Alignment.createAlignment(),
-          spacingBuilder)
-        blocks.add(block)
-      } else if (child.getElementType != TokenType.WHITE_SPACE) {
-        val block = new RuleBlock(child, Wrap.createWrap(WrapType.NONE, false), Alignment.createAlignment(),
-          spacingBuilder)
-        blocks.add(block)
+  private def addBlocks(child: ASTNode, blocks: util.ArrayList[Block]): Unit = {
+    if (child != null) {
+      child.getElementType match {
+        case PrologTypes.UNIFY => wrapblock(child, blocks)
+        case PrologTypes.COMMA => wrapblock(child, blocks)
+        case PrologTypes.DOT => wrapblock(child, blocks)
+        case TokenType.WHITE_SPACE => wrapblock(child, blocks)
+        case non_white_space_rest => blocks.add(new RuleBlock(child, Wrap.createWrap(WrapType.NONE, false), Alignment.createAlignment(),
+          spacingBuilder))
       }
       addBlocks(child.getTreeNext, blocks)
     }
   }
 
-  override def getIndent: Indent = Indent.getNoneIndent()
+  private def wrapblock(child: ASTNode, blocks: util.ArrayList[Block]) = {
+    val block = new RuleBlock(child, Wrap.createWrap(WrapType.ALWAYS, false), Alignment.createAlignment(),
+      spacingBuilder)
+    blocks.add(block)
+
+  }
+
+  override def getIndent: Indent = Indent.getNoneIndent
 
   override def getSpacing(child1: Block, child2: Block): Spacing = spacingBuilder.getSpacing(this, child1, child2)
 
-  override def isLeaf: Boolean = myNode.getFirstChildNode() == null
+  override def isLeaf: Boolean = myNode.getFirstChildNode == null
 }
 
 class PrologLanguageCodeStyleSettingsProvider extends LanguageCodeStyleSettingsProvider {
@@ -70,13 +76,12 @@ class PrologLanguageCodeStyleSettingsProvider extends LanguageCodeStyleSettingsP
   override def getLanguage: Language = PrologLanguage.INSTANCE
 
 
-  override def customizeSettings(consumer: CodeStyleSettingsCustomizable, settingsType: LanguageCodeStyleSettingsProvider.SettingsType): Unit =
-    {
-      if(settingsType == SettingsType.INDENT_SETTINGS){
-        consumer.showStandardOptions("ALIGN_MULTILINE_METHOD_BRACKETS")
-        consumer.renameStandardOption("ALIGN_MULTILINE_METHOD_BRACKETS","indent rules")
-      }
+  override def customizeSettings(consumer: CodeStyleSettingsCustomizable, settingsType: LanguageCodeStyleSettingsProvider.SettingsType): Unit = {
+    if (settingsType == SettingsType.INDENT_SETTINGS) {
+      consumer.showStandardOptions("ALIGN_MULTILINE_METHOD_BRACKETS")
+      consumer.renameStandardOption("ALIGN_MULTILINE_METHOD_BRACKETS", "indent rules")
     }
+  }
 
   override def getCodeSample(settingsType: LanguageCodeStyleSettingsProvider.SettingsType): String = "greeting(\"Hello World!\").\n" +
     "len(0, []).\n" +
