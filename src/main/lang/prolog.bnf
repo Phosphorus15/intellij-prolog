@@ -38,8 +38,8 @@
       block_comment='regexp:/\*(.|\n)*\*/'
       integer='regexp:\d+'
       float='regexp:\d+(\.d+)?([Ee]\d+)?' // strict floating mode
-      const_id='regexp:\p{Lower}(\p{Alnum}|_|-|:)*'
-      atom_id='regexp:((\p{Upper}|_)(\p{Alnum}|_)*)'
+      const_id='regexp:\p{Lower}([\p{Alnum}ñ]|_|-|:)*'
+      atom_id='regexp:((\p{Upper}|_)([\p{Alnum}ñ]|_)*)'
       operator_id='regexp:[<=>:!+\\\-*/]+' // considering that operators in prolog can fly everywhere...
       string="regexp:('([^'\\]|\\.)*'|\"([^\"\\]|\\.)*\")"
     ]
