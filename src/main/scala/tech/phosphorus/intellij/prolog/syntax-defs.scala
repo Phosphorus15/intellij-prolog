@@ -11,7 +11,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import com.intellij.psi.tree.IElementType
-import tech.phosphorus.intellij.prolog.PrologSyntaxHighlighter.{COMMENT, KEYWORD, NUMBER, OPERATION_SIGN, PARENTHESIS, STR}
+import tech.phosphorus.intellij.prolog.PrologSyntaxHighlighter._
 import tech.phosphorus.intellij.prolog.psi.{PrologFileType, PrologTypes}
 
 import java.util
@@ -21,11 +21,14 @@ class PrologLexerAdapter extends FlexAdapter(new PrologLexer)
 
 object PrologSyntaxHighlighter {
   val COMMENT: TextAttributesKey = createTextAttributesKey("COMMENT", DefaultLanguageHighlighterColors.LINE_COMMENT)
-  val KEYWORD = createTextAttributesKey("KEYWORDS", DefaultLanguageHighlighterColors.KEYWORD)
-  val PARENTHESIS = createTextAttributesKey("PARENTS", DefaultLanguageHighlighterColors.PARENTHESES)
-  val OPERATION_SIGN = createTextAttributesKey("COMMA_AND", DefaultLanguageHighlighterColors.OPERATION_SIGN)
-  val STR = createTextAttributesKey("STRING", DefaultLanguageHighlighterColors.STRING)
-  val NUMBER = createTextAttributesKey("NUMERIC_LITERAL", DefaultLanguageHighlighterColors.NUMBER)
+  val KEYWORD: TextAttributesKey = createTextAttributesKey("KEYWORDS", DefaultLanguageHighlighterColors.KEYWORD)
+  val PARENTHESIS: TextAttributesKey = createTextAttributesKey("PARENTS", DefaultLanguageHighlighterColors.PARENTHESES)
+  val OPERATION_SIGN: TextAttributesKey = createTextAttributesKey("COMMA_AND", DefaultLanguageHighlighterColors.OPERATION_SIGN)
+  val STR: TextAttributesKey = createTextAttributesKey("STRING", DefaultLanguageHighlighterColors.STRING)
+  val NUMBER: TextAttributesKey = createTextAttributesKey("NUMERIC_LITERAL", DefaultLanguageHighlighterColors.NUMBER)
+  val COMMA: TextAttributesKey = createTextAttributesKey("COMMA", DefaultLanguageHighlighterColors.COMMA)
+  val PARAMETER: TextAttributesKey = createTextAttributesKey("PARAMETER", DefaultLanguageHighlighterColors.PARAMETER)
+  val IDENTIFIER: TextAttributesKey = createTextAttributesKey("IDENTIFIER", DefaultLanguageHighlighterColors.IDENTIFIER)
 }
 
 class PrologSyntaxHighlighter extends SyntaxHighlighterBase {
@@ -38,7 +41,7 @@ class PrologSyntaxHighlighter extends SyntaxHighlighterBase {
         Array(COMMENT)
       case PrologTypes.DOT =>
         Array(DefaultLanguageHighlighterColors.SEMICOLON)
-      case PrologTypes.UNIFY | PrologTypes.ARITH_EVAL | PrologTypes.WILDCARD =>
+      case PrologTypes.UNIFY | PrologTypes.ARITH_EVAL | PrologTypes.WILDCARD | PrologTypes.EXPAND =>
         Array(KEYWORD)
       case PrologTypes.LP | PrologTypes.RP | PrologTypes.LB | PrologTypes.RB =>
         Array(PARENTHESIS)
@@ -52,6 +55,12 @@ class PrologSyntaxHighlighter extends SyntaxHighlighterBase {
         Array(STR)
       case PrologTypes.INTEGER | PrologTypes.FLOAT =>
         Array(NUMBER)
+      case PrologTypes.COMMA =>
+        Array(COMMA)
+      case PrologTypes.PARAMETER_LIST =>
+        Array(PARAMETER)
+      case PrologTypes.IDENT =>
+        Array(IDENTIFIER)
       case _ => Array()
     }
   }
@@ -89,24 +98,27 @@ class PrologColorSettingsPage extends ColorSettingsPage {
     new AttributesDescriptor("Line Comment", PrologSyntaxHighlighter.COMMENT),
     new AttributesDescriptor("Keyword", PrologSyntaxHighlighter.KEYWORD),
     new AttributesDescriptor("Parenthesis", PrologSyntaxHighlighter.PARENTHESIS),
-    new AttributesDescriptor("Operation sign", PrologSyntaxHighlighter.OPERATION_SIGN),
+    new AttributesDescriptor("Operator", PrologSyntaxHighlighter.OPERATION_SIGN),
     new AttributesDescriptor("String", PrologSyntaxHighlighter.STR),
-    new AttributesDescriptor("Number", PrologSyntaxHighlighter.NUMBER)
+    new AttributesDescriptor("Number", PrologSyntaxHighlighter.NUMBER),
+    new AttributesDescriptor("Comma", PrologSyntaxHighlighter.COMMA),
+    new AttributesDescriptor("Parameter", PrologSyntaxHighlighter.PARAMETER),
+    new AttributesDescriptor("Identifier", PrologSyntaxHighlighter.IDENTIFIER)
   )
 
-  override def getAttributeDescriptors(): Array[AttributesDescriptor] = {
+  override def getAttributeDescriptors: Array[AttributesDescriptor] = {
     DESCRIPTORS
   }
 
-  override def getIcon(): Icon = {
+  override def getIcon: Icon = {
     PrologFileType.FILE;
   }
 
-  override def getHighlighter(): SyntaxHighlighter = {
+  override def getHighlighter: SyntaxHighlighter = {
     new PrologSyntaxHighlighter();
   }
 
-  override def getDemoText(): String = {
+  override def getDemoText: String = {
     "greeting(\"Hello World!\").\n"+
     "len(0, []).\n" +
       "len(Len, [_|Tail]) :- len(Lsub, Tail), Len is Lsub + 1.\n" +
@@ -142,7 +154,7 @@ class PrologColorSettingsPage extends ColorSettingsPage {
       "fact(0, R, R) :- !.";
   }
 
-  override def getDisplayName(): String = {
+  override def getDisplayName: String = {
     "Prolog";
   }
 
