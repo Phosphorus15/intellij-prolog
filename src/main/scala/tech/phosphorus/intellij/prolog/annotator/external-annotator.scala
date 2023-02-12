@@ -41,7 +41,10 @@ class PrologExternalAnnotator extends ExternalAnnotator[AnnotatorTask, Array[Lin
       //          .notify("Prolog toolchain not detected", "configure a valid toolchain to enable external code linter", file.getProject, null, new PrologShowSettingsAction)
       GlobalSwiAlertLock.alertAlready = true
       Abort()
-    } else Task(file.getText, file.getVirtualFile.getParent.getPath, new SwiPrologLinter(toolchain))
+    } else{
+      val optionalFile=Option(file)
+      if(optionalFile.isEmpty) Abort() else Task(optionalFile.map(_.getText).getOrElse(""), optionalFile.flatMap(x=>Option(x.getVirtualFile)).flatMap(x=>Option(x.getParent)).flatMap(x=>Option(x.getPath)).getOrElse(""), new SwiPrologLinter(toolchain))
+    }
   }
 
   override def doAnnotate(task: AnnotatorTask): Array[LinterReport] = {
