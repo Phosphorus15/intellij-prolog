@@ -16,7 +16,7 @@ import com.intellij.psi.stubs.StubElement;
 
 public class PrologPredicateIdImpl extends PrologDeclarationMixin implements PrologPredicateId {
 
-  public PrologPredicateIdImpl(PrologPredicateStub stub, IStubElementType<StubElement<?>, PsiElement> type, ASTNode node) {
+  public PrologPredicateIdImpl(PrologPredicateStub stub, IStubElementType<? extends StubElement<?>, ? extends PsiElement> type, ASTNode node) {
     super(stub, type, node);
   }
 

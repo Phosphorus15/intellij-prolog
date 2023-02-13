@@ -32,6 +32,7 @@
       LIST_CONS='|'
       WILDCARD='_'
       ARITH_EVAL='is'
+      RUNTIME_EVALUATION='=..'
 
       space='regexp:\s+'
       comment='regexp:(%.*)'
@@ -85,7 +86,9 @@ logical_not ::= '/-' primary
 
 arithmetic_eval ::= 'is' primary
 
-equiv_binary ::= ( logical_not | logical_and | arithmetic_eval )
+runtime_eval ::= '=..' primary
+
+equiv_binary ::= ( logical_not | logical_and | arithmetic_eval | runtime_eval )
 
 literal ::= string | integer | float
 

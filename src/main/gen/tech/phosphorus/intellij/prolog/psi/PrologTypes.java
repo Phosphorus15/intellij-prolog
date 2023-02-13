@@ -24,6 +24,7 @@ public interface PrologTypes {
   IElementType PREDICATE = PrologElementType.createType("PREDICATE");
   IElementType PREDICATE_ID = PrologElementType.createType("PREDICATE_ID");
   IElementType REF_PREDICATE_ID = PrologElementType.createType("REF_PREDICATE_ID");
+  IElementType RUNTIME_EVAL = PrologElementType.createType("RUNTIME_EVAL");
   IElementType TOPLEVEL_EXPR = PrologElementType.createType("TOPLEVEL_EXPR");
   IElementType TRAILING_EXPR = PrologElementType.createType("TRAILING_EXPR");
 
@@ -46,6 +47,7 @@ public interface PrologTypes {
   IElementType RB = new PrologTokenType("]");
   IElementType RBR = new PrologTokenType("}");
   IElementType RP = new PrologTokenType(")");
+  IElementType RUNTIME_EVALUATION = new PrologTokenType("=..");
   IElementType SEMI = new PrologTokenType(";");
   IElementType STRING = new PrologTokenType("string");
   IElementType UNIFY = new PrologTokenType(":-");
@@ -101,6 +103,9 @@ public interface PrologTypes {
       }
       else if (type == REF_PREDICATE_ID) {
         return new PrologRefPredicateIdImpl(node);
+      }
+      else if (type == RUNTIME_EVAL) {
+        return new PrologRuntimeEvalImpl(node);
       }
       else if (type == TOPLEVEL_EXPR) {
         return new PrologToplevelExprImpl(node);

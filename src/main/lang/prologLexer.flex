@@ -50,6 +50,7 @@ STRING=('([^'\\]|\\.)*'|\"([^\"\\]|\\.)*\")
   "."                { return DOT; }
   ":-"               { return UNIFY; }
   "-->"              { return EXPAND; }
+  "=.."               { return RUNTIME_EVALUATION; }
   "/-"               { return NOT; }
   "("                { return LP; }
   ")"                { return RP; }

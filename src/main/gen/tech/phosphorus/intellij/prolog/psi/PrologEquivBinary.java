@@ -16,4 +16,7 @@ public interface PrologEquivBinary extends PsiElement {
   @Nullable
   PrologLogicalNot getLogicalNot();
 
+  @Nullable
+  PrologRuntimeEval getRuntimeEval();
+
 }
