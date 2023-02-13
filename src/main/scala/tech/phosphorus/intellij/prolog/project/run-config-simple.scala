@@ -13,9 +13,9 @@ import tech.phosphorus.intellij.prolog.psi.{PrologFileType, PrologPsiUtil, Prolo
 class PrologSimpleRunConfigurationProducer extends LazyRunConfigurationProducer[PrologRunConfiguration] {
 
   private def getVirtualFile(configurationContext: ConfigurationContext) =
-    configurationContext.getPsiLocation.asOption().map(_.getContainingFile).fold(
-      configurationContext.getDataContext.getData(CommonDataKeys.VIRTUAL_FILE)
-    )(f => f.getVirtualFile).asOption()
+    Option(configurationContext.getPsiLocation).map(_.getContainingFile).fold(
+      Option(configurationContext.getDataContext.getData(CommonDataKeys.VIRTUAL_FILE))
+    )(f => Option(f).map(_.getVirtualFile))
 
   override def setupConfigurationFromContext(t: PrologRunConfiguration, configurationContext: ConfigurationContext, ref: Ref[PsiElement]): Boolean = {
     val file = getVirtualFile(configurationContext)
