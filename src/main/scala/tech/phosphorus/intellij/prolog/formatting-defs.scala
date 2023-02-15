@@ -14,16 +14,17 @@ import java.util
 import scala.annotation.tailrec
 
 class PrologFormattingModelBuilder extends FormattingModelBuilder {
-  override def createModel(formattingContext: FormattingContext): FormattingModel = {
-    val codeStyleSettings = formattingContext.getCodeStyleSettings
-    FormattingModelProvider
+    override def createModel(formattingContext: FormattingContext): FormattingModel =
+  // lambda here
+    ((codeStyleSettings: CodeStyleSettings) => FormattingModelProvider
       .createFormattingModelForPsiFile(formattingContext.getContainingFile,
         new RuleBlock(formattingContext.getNode,
           Wrap.createWrap(WrapType.NONE, false),
           Alignment.createAlignment(),
           createSpaceBuilder(codeStyleSettings)),
-        codeStyleSettings)
-  }
+        codeStyleSettings))(
+      formattingContext.getCodeStyleSettings // application here
+    )
 }
 
 object PrologFormattingModelBuilder {
