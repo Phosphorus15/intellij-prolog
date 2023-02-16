@@ -1,6 +1,6 @@
 package tech.phosphorus.intellij.prolog.project
 
-import com.intellij.execution.actions.{ConfigurationContext, LazyRunConfigurationProducer, RunConfigurationProducer}
+import com.intellij.execution.actions.{ConfigurationContext, LazyRunConfigurationProducer}
 import com.intellij.execution.configurations.ConfigurationFactory
 import com.intellij.execution.lineMarker.{ExecutorAction, RunLineMarkerContributor}
 import com.intellij.icons.AllIcons

@@ -49,6 +49,11 @@
         <colorSettingsPage implementation="tech.phosphorus.intellij.prolog.PrologColorSettingsPage"/>
         <lang.syntaxHighlighterFactory language="IJProlog"
                                        implementationClass="tech.phosphorus.intellij.prolog.PrologSyntaxHighlighterFactory"/>
+        <lang.formatter
+                language="IJProlog"
+                implementationClass="tech.phosphorus.intellij.prolog.formatting.PrologFormattingModelBuilder"/>
+        <langCodeStyleSettingsProvider
+                implementation="tech.phosphorus.intellij.prolog.formatting.PrologLanguageCodeStyleSettingsProvider"/>
 
 
         <!-- Stub indices -->
