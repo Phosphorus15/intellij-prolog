@@ -121,7 +121,7 @@ public class PrologParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // logical_not | logical_and | arithmetic_eval
+  // logical_not | logical_and | arithmetic_eval | runtime_eval
   public static boolean equiv_binary(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "equiv_binary")) return false;
     boolean r;
@@ -129,6 +129,7 @@ public class PrologParser implements PsiParser, LightPsiParser {
     r = logical_not(b, l + 1);
     if (!r) r = logical_and(b, l + 1);
     if (!r) r = arithmetic_eval(b, l + 1);
+    if (!r) r = runtime_eval(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
@@ -411,6 +412,19 @@ public class PrologParser implements PsiParser, LightPsiParser {
     boolean r;
     r = toplevel_expr(b, l + 1);
     if (!r) r = trailing_expr(b, l + 1);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // '=..' primary
+  public static boolean runtime_eval(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "runtime_eval")) return false;
+    if (!nextTokenIs(b, RUNTIME_EVALUATION)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, RUNTIME_EVALUATION);
+    r = r && primary(b, l + 1);
+    exit_section_(b, m, RUNTIME_EVAL, r);
     return r;
   }
 

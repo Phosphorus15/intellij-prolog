@@ -72,6 +72,10 @@ public class PrologVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitRuntimeEval(@NotNull PrologRuntimeEval o) {
+    visitPsiElement(o);
+  }
+
   public void visitToplevelExpr(@NotNull PrologToplevelExpr o) {
     visitPsiNameIdentifierOwner(o);
   }
