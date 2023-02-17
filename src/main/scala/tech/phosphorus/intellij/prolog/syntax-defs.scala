@@ -48,9 +48,7 @@ class PrologSyntaxHighlighter extends SyntaxHighlighterBase {
         Array(PARENTHESIS)
       case PrologTypes.CONST_ID =>
         Array(DefaultLanguageHighlighterColors.INSTANCE_METHOD)
-      case PrologTypes.ATOM_ID =>
-        Array(DefaultLanguageHighlighterColors.IDENTIFIER)
-      case PrologTypes.LOGICAL_AND | PrologTypes.LOGICAL_OR | PrologTypes.OPERATOR_ID =>
+      case PrologTypes.LOGICAL_AND | PrologTypes.LOGICAL_OR | PrologTypes.OPERATOR_ID | PrologTypes.RUNTIME_EVALUATION =>
         Array(OPERATION_SIGN)
       case PrologTypes.STRING =>
         Array(STR)
@@ -58,9 +56,9 @@ class PrologSyntaxHighlighter extends SyntaxHighlighterBase {
         Array(NUMBER)
       case PrologTypes.COMMA | PrologTypes.LIST_CONS =>
         Array(COMMA)
-      case PrologTypes.PARAMETER_LIST =>
+      case PrologTypes.COMMON_PREDICATE =>
         Array(PARAMETER)
-      case PrologTypes.IDENT =>
+      case PrologTypes.ATOM_ID =>
         Array(IDENTIFIER)
       case PrologTypes.COMMON_VAL =>
         Array(INSTANCE_METHOD)
@@ -155,7 +153,14 @@ class PrologColorSettingsPage extends ColorSettingsPage {
       |	C1 is C * N,
       |	fact(N1, C1, R).
       |
-      |fact(0, R, R) :- !.""".replace("\r", "").stripMargin.format();
+      |dbretrieve2(TupleDesc, QueueNum, TupCall ) :-
+      | TupleDesc =.. [_:TupleList] ,%TupleHead
+      | repeat,
+      | p_getTuple(TupleList,Eof, TupCall) ,
+      | ( (Eof == true, p_freeQueue(QueueNum) ,! ,fail) ;
+      | true) .
+      |
+      |fact(0, R, R) :- !.""".replace("\r", "").stripMargin;
   }
 
   override def getDisplayName: String = {
